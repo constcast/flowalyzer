@@ -1,4 +1,5 @@
-import utils, db
+import utils
+from database import MySQLReader
 
 import sys
 
@@ -14,4 +15,4 @@ class MainModule:
 			print "Finished BA mode. Exiting program!"
 			return
 
-		dbreader = db.MySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])	
+		dbreader = MySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])	
