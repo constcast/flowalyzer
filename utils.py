@@ -64,7 +64,7 @@ def exportFromQuery(c, query, exporterFile):
         c.execute(query)
         for i in c.fetchall():
                 if i[0]:
-                        exporterFile.write("\t%u" % i[0])
+                        exporterFile.write("\t%lu" % long(i[0]))
                 else:
                         exporterFile.write("\t0")
  
