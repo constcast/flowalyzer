@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-
-import MySQLdb, os, sys, calendar, string, time
-
-from operator import mod
-
-import config
-
 
 def int2ip(i):
         # konvertiert einen Integer in eine IP im dotted-quad Format
@@ -53,7 +45,6 @@ def getTempTable(startTime, endTime, c):
 
         return retTable
 
-
 def getExporterStats(c):
         ret = list()
 
@@ -74,18 +65,9 @@ def exportFromQuery(c, query, exporterFile):
                         exporterFile.write("\t%u" % i[0])
                 else:
                         exporterFile.write("\t0")
-        
+ 
 
-
-if __name__ == "__main__":
-        # get to the flow database, aggregate new data and push it to RDD
-        try:
-                connection = MySQLdb.connect(config.db_host, config.db_user, config.db_password, config.db_name)
-        except MySQLdb.OperationalError, message:
-                print('%d: Error connecting to database: %s' %(message[0], message[1]))
-                sys.exit(-1)
-        c = connection.cursor()
-
+def do_temp_stuff(c):
 	starttime = 1313594804
 	endtime   = 1316526512
 	stepsize = 300
