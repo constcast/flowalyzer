@@ -70,9 +70,21 @@ def exportFromQuery(c, query, exporterFile):
  
 
 def do_temp_stuff(config, c):
-	starttime = 1313594804
-	endtime   = 1316526512
+	starttime = 0
+	endtime   = 0
 	stepsize = 300
+
+	# get first and last time in DB
+	c.execute("SHOW TABLES LIKE 'h\\_%'")
+	tables = c.fetchall()
+	print tables
+	print "First table %s, Last table %s" % (tables[0], tables[-1])
+	c.execute("SELECT firstSwitched from %s LIMIT 1" % (tables[0]))
+	starttime = int(c.fetchall()[0][0])
+
+	c.execute("SELECT firstSwitched from %s" % (tables[-1]))
+	endtime = int(c.fetchall()[-1][0])
+
 	rows = int((endtime - starttime) / stepsize)
 
         exporterIDs = getExporterStats(c)
