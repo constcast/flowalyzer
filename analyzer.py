@@ -9,8 +9,7 @@ class MainModule:
 	def run(self):
 		if 'baTestMode' in self.config:
 			# we are now running the testing stuff we did for the BA
-			print "We are going in BA test mode!"
-			print self.config
+			print "Running in BA test mode!"
 			utils.BA_TEMP_STUFF(self.config)
 			print "Finished BA mode. Exiting program!"
 			return
