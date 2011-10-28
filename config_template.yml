@@ -1,0 +1,5 @@
+db_host: <hostname>
+db_user: <username>
+db_password: <password>
+db_name: <dbname>
+baTestMode: yes
