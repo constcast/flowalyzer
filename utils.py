@@ -1,3 +1,5 @@
+import MySQLdb, os, sys, calendar, string, time
+from operator import mod
 
 def int2ip(i):
         # konvertiert einen Integer in eine IP im dotted-quad Format
