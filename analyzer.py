@@ -15,4 +15,4 @@ class MainModule:
 			print "Finished BA mode. Exiting program!"
 			return
 
-		dbreader = MySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])	
+		dbreader = MySQLReader.MySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])	
