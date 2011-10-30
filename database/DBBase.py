@@ -6,5 +6,23 @@ class DBBase:
 		self.password = password
 
 	def connect(self):
-		pass
+		raise Exception("connect() not implemented ...")
 	
+	
+
+class TableSpanBase:
+	def __init__(self, startTime, endTime):
+		pass
+
+	def getTableNames(self):
+		raise Exception("getTableNames() not implemented ...")
+
+	def getAllTables(self):
+		raise Exception("getTables() not implemented ...")
+	
+	def getFirstTimestamp(self):
+		raise Exception("getFirstTimestamp() not implemented ...")
+	
+	def getLastTimestamp(self):
+		raise Exception("getLastTimestamp() not implemented ...")
+
