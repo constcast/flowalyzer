@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
 
-from analyzer import MainModule
+from mainmodule import MainModule
 
 import sys, yaml
 
