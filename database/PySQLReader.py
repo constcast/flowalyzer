@@ -20,6 +20,10 @@ class PySQLReader(DBBase):
 
 		self.cursor = self.connection.cursor()
 
+	def createCompleteSpan(self):
+		span = PySQLTableSpan(-1, -1, self.cursor)
+		return span
+
 		
 class PySQLTableSpan(TableSpanBase):
 	def __init__(self, startTime, endTime, cursor):
@@ -27,6 +31,8 @@ class PySQLTableSpan(TableSpanBase):
 
 		self.cursor = cursor
 		self.tables = []
+
+		return
 
 		tmpTables = self.getTables()
 	        for i in tmpTables: 
@@ -42,7 +48,7 @@ class PySQLTableSpan(TableSpanBase):
 			raise Exception("No table found!")
 
 	def getAllTables(self):
-		self.cursor.execute("SHOW TABLES LIKE 'h\\_%'")
+		self.cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname='public' and tablename like 'f_%'")
 		return self.cursor.fetchall()
 	
 	def getFirstTimestamp(self):
