@@ -56,3 +56,7 @@ class MySQLTableSpan(TableSpanBase):
 
 	def getTableNames(self):
 		return self.tables
+
+	def getFlows(self, table, query):
+		self.cursor.execute(query)
+		return self.cursor.fetchall()

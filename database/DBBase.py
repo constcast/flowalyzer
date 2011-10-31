@@ -26,3 +26,6 @@ class TableSpanBase:
 	def getLastTimestamp(self):
 		raise Exception("getLastTimestamp() not implemented ...")
 
+	def getFlows(self, table, query):
+		raise Excpetion("getFlows() not implemented ...")
+
