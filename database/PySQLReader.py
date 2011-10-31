@@ -13,8 +13,8 @@ class PySQLReader(DBBase):
 
 	def connect(self):
 		try:
-			self.connection = MySQLdb.connect(self.host, self.user, self.password, self.dbname)
-		except MySQLdb.OperationalError, message:
+			self.connection = pgdb.connect(database=self.dbname, host=self.host, user=self.user, password=self.password)
+		except pgdb.OperationalError, message:
 			print '%d: Error connecting to database: %s' % (message[0], message[1])
 			sys.exit(-1)
 
