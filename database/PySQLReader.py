@@ -20,14 +20,14 @@ class PySQLReader(DBBase):
 
 		self.cursor = self.connection.cursor()
 
-	def createCompleteSpan(self):
-		span = PySQLTableSpan(-1, -1, self.cursor)
+	def createSpan(self, startTime = None, endTime = None, tableName = None):
+		span = PySQLTableSpan(startTime=startTime, endTime=endTime, tableName=tableName, cursor=self.cursor)
 		return span
 
 		
 class PySQLTableSpan(TableSpanBase):
-	def __init__(self, startTime, endTime, cursor):
-		TableSpanBase.__init__(self, startTime, endTime)
+	def __init__(self, startTime = None, endTime = None, tableName = None, cursor = None):
+		TableSpanBase.__init__(self, startTime, endTime, tableName)
 
 		self.cursor = cursor
 		self.tables = []
@@ -53,17 +53,28 @@ class PySQLTableSpan(TableSpanBase):
 	
 	def getFirstTimestamp(self):
 		firstTable = self.getTables()[0]
-		self.cursor.execute("SELECT firstSwitched from %s LIMIT 1" % (firstTable))
-		return int(c.fetchall()[0][0])
+		return self.getFirstFromTable(firstTable)
 	
 	def getLastTimestamp(self):
 		lastTable = self.getTables()[-1]
-		self.cursor.execute("SELECT lastSwitched from %s" % (lastTable))
-		return int(c.fetchall()[-1][0])
+		return self.getLastFromTable(lastTable)
 
 	def getTableNames(self):
 		return self.tables
 
-	def getFlows(self, table, query):
+	def getFlows(self, query):
 		self.cursor.execute(query)
+		return self.cursor.fetchall()
+
+	def getFirstFromTable(self, table):
+		self.cursor.execute("select extract('epoch' from firstSwitched) AS UnixTime from %s LIMIT 1" % (table))
+		#self.cursor.execute("select firstSwitched from %s LIMIT 1" % (table))
+		return self.cursor.fetchall()[0][0]
+
+	def getLastFromTable(self, table):
+		#self.cursor.execute("select extract('epoch' from firstSwitched) AS UnixTime from %s" % (table))
+		return int(self.cursor.fetchall()[-1][0])
+
+	def getFlows(self, query, table, first, last):
+		self.cursor.execute(query % (table, first, last))
 		return self.cursor.fetchall()
