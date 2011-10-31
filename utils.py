@@ -22,7 +22,7 @@ def getTempTable(startTime, endTime, c):
                         tables.append(row[0])
 
         if len(tables) == 0:
-                raise Exception("No table found!")
+                #raise Exception("No table found!")
                 return False
 
         # FIXME: this is buggy if we have more than one instance working on the database ....
@@ -72,7 +72,7 @@ def exportFromQuery(c, query, exporterFile):
 def do_temp_stuff(config, c):
 	starttime = 0
 	endtime   = 0
-	stepsize = 300
+	stepsize = 3600
 
 	# get first and last time in DB
 	c.execute("SHOW TABLES LIKE 'h\\_%'")
