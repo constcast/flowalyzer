@@ -7,11 +7,16 @@ class DBBase:
 
 	def connect(self):
 		raise Exception("connect() not implemented ...")
+
+	def createCompleteSpan(self):
+		raise Exception("createCompleteSpan() not implemented ...")
 	
 	
 
 class TableSpanBase:
 	def __init__(self, startTime, endTime):
+		self.startTime = startTime
+		self.endTime = endTime
 		pass
 
 	def getTableNames(self):
