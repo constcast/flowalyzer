@@ -108,7 +108,7 @@ def do_temp_stuff(config, c):
                                 expFile = statsPerExp[exporter]
 
                                 # record time stamp
-                                expFile.write("%u " % j)
+                                expFile.write("%u\t" % j)
 
                                 cmd = "SELECT SUM(pkts) from " + myTable + " where exporterID = " + str(exporter)
                                 exportFromQuery(c, cmd, expFile)
