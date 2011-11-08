@@ -10,6 +10,7 @@ class MySQLReader(DBBase):
 		self.cursor = None
 		self.connect()
 
+
 	def connect(self):
 		try:
 			self.connection = MySQLdb.connect(self.host, self.user, self.password, self.dbname)
@@ -19,7 +20,22 @@ class MySQLReader(DBBase):
 
 		self.cursor = self.connection.cursor()
 
-		
+	def getTables(self):
+		self.cursor.execute("SHOW TABLES LIKE 'h\\_%'")
+		self.allTables = self.fetchall()
+
+	def getDBInterval(self):
+		firstTable = self.getTables()[0]
+		self.cursor.execute("SELECT firstSwitched from %s LIMIT 1" % (firstTable))
+		first =  int(c.fetchall()[0][0])
+		lastTable = self.getTables()[-1]
+		self.cursor.execute("SELECT MAX(firstSwitched) from %s" % (lastTable))
+		last int(c.fetchall()[0][0])
+		return (first, last)
+
+	def getNextWindow(self, table, query):
+		raise Excpetion("getFlows() not implemented ...")
+	
 class MySQLTableSpan(TableSpanBase):
 	def __init__(self, startTime, endTime, cursor):
 		TableSpanBase.__init__(self, startTime, endTime)
@@ -41,8 +57,7 @@ class MySQLTableSpan(TableSpanBase):
 			raise Exception("No table found!")
 
 	def getAllTables(self):
-		self.cursor.execute("SHOW TABLES LIKE 'h\\_%'")
-		return self.cursor.fetchall()
+				return self.cursor.fetchall()
 	
 	def getFirstTimestamp(self):
 		firstTable = self.getTables()[0]

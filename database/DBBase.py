@@ -5,32 +5,21 @@ class DBBase:
 		self.user = user
 		self.password = password
 
+		self.stepSize = 300
+		self.starttime = 0
+
 	def connect(self):
 		raise Exception("connect() not implemented ...")
 
-	def createSpan(self, startTime = None, endTime = None, tableName = None):
-		raise Exception("createCompleteSpan() not implemented ...")
-	
-	
+	def getDBInterval(self):
+		raise Exception("getInterval() not implemented ...")
 
-class TableSpanBase:
-	def __init__(self, startTime, endTime, tableName):
-		self.startTime = startTime
-		self.endTime = endTime
-		self.tableName = tableName
+	def setStepSize(self, stepsize):
+		self.stepSize = stepsize
 
-	def getTableNames(self):
-		raise Exception("getTableNames() not implemented ...")
+	def setStartTime(self, starttime):
+		self.starttime = starttime
 
-	def getAllTables(self):
-		raise Exception("getTables() not implemented ...")
-	
-	def getFirstTimestamp(self):
-		raise Exception("getFirstTimestamp() not implemented ...")
-	
-	def getLastTimestamp(self):
-		raise Exception("getLastTimestamp() not implemented ...")
-
-	def getFlows(self, table, query):
+	def getNextWindow(self, table, query):
 		raise Excpetion("getFlows() not implemented ...")
 
