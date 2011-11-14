@@ -7,6 +7,7 @@ class DBBase:
 
 		self.stepSize = 300
 		self.starttime = 0
+		self.nextSlide = 0
 
 	def connect(self):
 		raise Exception("connect() not implemented ...")
@@ -19,6 +20,10 @@ class DBBase:
 
 	def setStartTime(self, starttime):
 		self.starttime = starttime
+		self.nextSlide = starttime
+
+	def getNextFlows(self):
+		raise Exception("getNextFlows() not implemented ...")
 
 	def getNextWindow(self, table, query):
 		raise Excpetion("getFlows() not implemented ...")

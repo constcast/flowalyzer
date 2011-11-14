@@ -10,6 +10,17 @@ class MySQLReader(DBBase):
 		self.cursor = None
 		self.connect()
 
+	def getTableNames(self, startTime, endTime):
+		tables = list()
+		tmpTables = self.getTables()
+	        for i in tmpTables: 
+			tabletime = calendar.timegm([string.atoi(row[0][2:6]), string.atoi(row[0][6:8]), string.atoi(row[0][8:10]), string.atoi(row[0][11:13]), string.atoi(row[0][14])*30, 0, 0, 0, 0])
+			# one table is 30 minutes == 30*60
+			tableLength = 30*60
+			alignedStart = startTime - mod(startTime, tableLength)
+			alignedEnd = endTime + tableLength - mod(endTime + tableLength, tableLength)
+			if tabletime >= alignedStart and tabletime < alignedEnd:
+				tables.append(row[0])
 
 	def connect(self):
 		try:
@@ -30,8 +41,17 @@ class MySQLReader(DBBase):
 		first =  int(c.fetchall()[0][0])
 		lastTable = self.getTables()[-1]
 		self.cursor.execute("SELECT MAX(firstSwitched) from %s" % (lastTable))
-		last int(c.fetchall()[0][0])
+		last = int(c.fetchall()[0][0])
 		return (first, last)
+
+	def getNextFlows(self):
+		tableNames = getTableNames(self.nextSlide, self.nextSlide + self.stepSize);
+		flows = list()
+		for i in tableNames:
+			self.cursor.execute("SELECT * FROM %s WHERE firstSwitched >= %d and lastSwitched < %d" % (i, self.nextSlide, self.nextSlide + self.stepSize))
+			print self.fetchAll()
+		self.nextSlide = self.nextSlide + self.stepSize
+		return flows
 
 	def getNextWindow(self, table, query):
 		raise Excpetion("getFlows() not implemented ...")
@@ -43,21 +63,11 @@ class MySQLTableSpan(TableSpanBase):
 		self.cursor = cursor
 		self.tables = []
 
-		tmpTables = self.getTables()
-	        for i in tmpTables: 
-			tabletime = calendar.timegm([string.atoi(row[0][2:6]), string.atoi(row[0][6:8]), string.atoi(row[0][8:10]), string.atoi(row[0][11:13]), string.atoi(row[0][14])*30, 0, 0, 0, 0])
-			# one table is 30 minutes == 30*60
-			tableLength = 30*60
-			alignedStart = startTime - mod(startTime, tableLength)
-			alignedEnd = endTime + tableLength - mod(endTime + tableLength, tableLength)
-			if tabletime >= alignedStart and tabletime < alignedEnd:
-				tables.append(row[0])
-
 		if len(tables) == 0:
 			raise Exception("No table found!")
 
 	def getAllTables(self):
-				return self.cursor.fetchall()
+		return self.cursor.fetchall()
 	
 	def getFirstTimestamp(self):
 		firstTable = self.getTables()[0]

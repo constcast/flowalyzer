@@ -29,22 +29,10 @@ class MainModule:
 			print "FATAL: Unknown DB backend configured: %s" % (self.config['db_engine'])
 			sys.exit(-1)
 
-		compData = dbreader.createSpan()
-		print "Processing database. Found %u tables in DB." % (len(compData.getAllTables()))
-		for i in compData.getAllTables():
-			firstTime = compData.getFirstFromTable(i[0])
-#			span = dbreader.createSpan(tableName = i[0])
-#			span.cursor.execute("SELECT * from %s" % (span.tableName))
-#			i = span.cursor.fetchone()
-#			while i != None: 
-#				print i
-#				i = span.cursor.fetchone()
-			print "Processing Table XY"
-			query = "SELECT * from %s where firstSwitched between %lu and %lu"
-			stepsize = 3000
-			go = True
-			while go:
-				compData.cursor.execute(query % (i[0], firstTime, firstTime + stepsize))
-				for i in compData.cursor.fetchall():
-					print i
-				firstTime += stepsize
+		(first, last) = dbreader.getDBInterval()
+		dbreader.setStartTime(first)
+		dbreader.setStepSize(300)
+		flows = dbreader.getNextFlows()
+		while flows.len() > 0:
+			print flows
+			flows = dbreader.getNextFlows()
