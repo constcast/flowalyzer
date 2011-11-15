@@ -22,6 +22,9 @@ class DBBase:
 		self.starttime = starttime
 		self.nextSlide = starttime
 
+	def getCurrentStartTime(self):
+		return self.starttime
+
 	def getNextFlows(self):
 		raise Exception("getNextFlows() not implemented ...")
 

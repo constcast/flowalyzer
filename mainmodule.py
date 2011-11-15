@@ -33,6 +33,7 @@ class MainModule:
 		dbreader.setStartTime(first)
 		dbreader.setStepSize(300)
 		flows = dbreader.getNextFlows()
-		while flows.len() > 0:
-			print flows
+		while dbreader.getCurrentStartTime() < last:
 			flows = dbreader.getNextFlows()
+			print flows, type(flows), len(flows)
+
