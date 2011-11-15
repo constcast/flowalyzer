@@ -1,5 +1,5 @@
 
-import sys
+import sys, new
 
 class MainModule:
 	def __init__(self, config):
@@ -18,6 +18,7 @@ class MainModule:
 			print "FATAL: You need to configure a DB backend in your config file!"
 			sys.exit(-1)
 
+		print "Loading DB Connection ..."
 		if self.config['db_engine'] == "mysql": 
 			from database import MySQLReader
 			dbreader = MySQLReader.MySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])	
@@ -29,11 +30,22 @@ class MainModule:
 			print "FATAL: Unknown DB backend configured: %s" % (self.config['db_engine'])
 			sys.exit(-1)
 
+		if not "analyzers" in self.config:
+			print "FATAL: You need to specify at least one analyzer for your flow data!"
+			sys.exit(-1)
+		print "Loading analyzers ..."
+		sys.path.append("analyzers/")
+		importName = __import__(self.config["analyzers"])
+		analyzer = importName.Analyzer(self.config)
+		
+
+		print "Processing flows ..."
+
 		(first, last) = dbreader.getDBInterval()
 		dbreader.setStartTime(first)
 		dbreader.setStepSize(300)
 		flows = dbreader.getNextFlows()
 		while dbreader.getCurrentStartTime() < last:
-			flows = dbreader.getNextFlows()
-			print flows, type(flows), len(flows)
+			analyzer.processFlows(flows)
+			flows = dbreader.getNextFlows();
 
