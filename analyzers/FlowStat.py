@@ -71,7 +71,8 @@ class Analyzer(BaseAnalyzer):
 		for flow in flows:
 			self.packetReport.update(flow)
 			self.bytesReport.update(flow)
-		self.packetReport.createImages(self.imgDir, flows[-1][8])
-		self.bytesReport.createImages(self.imgDir, flows[-1][8])
+		if len(flows > 1):
+			self.packetReport.createImages(self.imgDir, flows[-1][8])
+			self.bytesReport.createImages(self.imgDir, flows[-1][8])
  
 		
