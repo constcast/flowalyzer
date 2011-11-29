@@ -54,25 +54,42 @@ class RRDGenerator:
 class Analyzer(BaseAnalyzer):
 	def __init__(self, config):
 		print "Initializing FlowStat module ..."
-		self.config = config
+		if len(config) == 0 or not isinstance(config[0], dict):
+			raise Exception("Configuration error cannot configure FlowStat!")
+	
+		self.configDict = config.pop(0)
 
-		self.rrdDir = 'rrd/'
-		self.imgDir = 'imgs/'
+		if not 'imgDir' in self.configDict:
+			raise Exception("FlowStat: imgDir not configured!")
+		self.imgDir = self.configDict['imgDir']
+
+		if not 'rrdDir' in self.configDict:
+			raise Exception("FlowStat: rrdDir not configured!")
+		self.rrdDir = self.configDict['rrdDir']
+
 		if not os.access(self.imgDir, os.R_OK | os.W_OK):
 			os.mkdir(self.imgDir)
 
 		rrdintervals = (60, 180, 720)
 		rrdgraphhist = (120, 1440, 43200)
 
-		self.packetReport = RRDGenerator("Packets", self.rrdDir, rrdintervals, rrdgraphhist, 7)
-		self.bytesReport  = RRDGenerator("Bytes"  , self.rrdDir, rrdintervals, rrdgraphhist, 6)
+		# generate report objects from config file
+		self.reports = []
+		for reportConfig in config:
+			if not 'reportName' in reportConfig:
+				raise Exception("FlowStat: Found report configuration without \'reportName\' field: %s" % (reportConfig))
+			if not 'idx' in reportConfig:
+				raise Exception("FlowStat: Found report configuration without \'idx\' field: %s" % (reportConfig))
+			if not 'filter' in reportConfig:
+				raise Exception("FlowStat: Found report configuration without \'filter\' field: %s" % (reportConfig))
+			self.reports.append(RRDGenerator(reportConfig['reportName'], self.rrdDir, rrdintervals, rrdgraphhist, reportConfig['idx']))
+		#self.packetReport = RRDGenerator("Packets", self.rrdDir, rrdintervals, rrdgraphhist, 7)
+		#self.bytesReport  = RRDGenerator("Bytes"  , self.rrdDir, rrdintervals, rrdgraphhist, 6)
 	
 	def processFlows(self, flows):
 		for flow in flows:
-			self.packetReport.update(flow)
-			self.bytesReport.update(flow)
-		if len(flows > 1):
-			self.packetReport.createImages(self.imgDir, flows[-1][8])
-			self.bytesReport.createImages(self.imgDir, flows[-1][8])
- 
-		
+			for report in self.reports:
+				report.update(flow)
+		if len(flows) > 1:
+			for report in self.reports:
+				report.createImages(self.imgDir, flows[-1][8])

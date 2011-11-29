@@ -4,7 +4,11 @@ db_password: <password>
 db_name: <dbname>
 
 db_enginge: <mysql|postgres>
-
-analyzers: FlowStat
-
 baTestMode: yes
+
+analyzers: [ FlowStat ]
+flowStatConfig: 
+- { imgDir: 'imgs/', rrdDir: 'rrd/' }
+- { reportName: 'Packets', idx: 7, filter: ' ' }
+- { reportName: 'Bytes', idx: 6, filter: ' ' }
+

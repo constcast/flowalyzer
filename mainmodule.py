@@ -35,15 +35,22 @@ class MainModule:
 			sys.exit(-1)
 		print "Loading analyzers ..."
 		sys.path.append("analyzers/")
-		importName = __import__(self.config["analyzers"])
-		analyzer = importName.Analyzer(self.config)
+		if not "analyzers" in self.config:
+			raise Exception("Could not find analyzers section in config file!")
+		for moduleName in self.config["analyzers"]:
+			importName = __import__(moduleName)
+			moduleConfigName = moduleName + "Config"
+			if not moduleConfigName in self.config:
+				print self.config
+				raise Exception("Could not find section %s for module %s in configuration" % (moduleConfigName, moduleConfigName))
+			analyzer = importName.Analyzer(self.config[moduleConfigName])
 		
 
 		print "Processing flows ..."
 
 		(first, last) = dbreader.getDBInterval()
 		dbreader.setStartTime(first)
-		dbreader.setStepSize(300)
+		dbreader.setStepSize(1000)
 		flows = dbreader.getNextFlows()
 		while dbreader.getCurrentStartTime() < last:
 			analyzer.processFlows(flows)
