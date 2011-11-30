@@ -25,7 +25,9 @@ class MainModule:
 		elif self.config['db_engine'] == "postgres":
 			from database import PySQLReader
 			dbreader = PySQLReader.PySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])	
-			
+		elif self.config['db_engine'] == "csv":
+			from database import CSVReader
+			dbreader = CSVReader.CSVReader(self.config['db_name'])
 		else:
 			print "FATAL: Unknown DB backend configured: %s" % (self.config['db_engine'])
 			sys.exit(-1)
