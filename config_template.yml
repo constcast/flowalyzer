@@ -6,7 +6,7 @@ db_name: <dbname>
 db_engine: <mysql|postgres|csv>
 
 analyzers: [ FlowStat ]
-flowStatConfig: 
+FlowStatConfig: 
 - { imgDir: 'imgs/', rrdDir: 'rrd/' }
 - { reportName: 'Packets', idx: 7, filter: ' ' }
 - { reportName: 'Bytes', idx: 6, filter: ' ' }
