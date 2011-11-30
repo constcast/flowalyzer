@@ -60,7 +60,12 @@ class MainModule:
 		(first, last) = dbreader.getDBInterval()
 		dbreader.setStartTime(first)
 		dbreader.setStopTime(last)
-		dbreader.setStepSize(1200)
+		
+		if 'db_stepsize' in self.config:
+			dbreader.setStepSize(int(self.config['db_stepsize'}))
+		else: 
+			# use 5 minutes step size by default
+			dbreader.setStepSize(300)
 
 		queue = dbreader.getQueue()
 		dbreader.start()
