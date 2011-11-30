@@ -1,4 +1,6 @@
-class DBBase:
+import multiprocessing
+
+class DBBase(multiprocessing.Process):
 	def __init__(self, dbname, host, user, password):
 		self.dbname = dbname
 		self.host = host 
@@ -7,7 +9,10 @@ class DBBase:
 
 		self.stepSize = 300
 		self.starttime = 0
+		self.stoptime = 0
 		self.nextSlide = 0
+
+		self.queue = multiprocessing.Queue()
 
 	def connect(self):
 		raise Exception("connect() not implemented ...")
@@ -22,6 +27,9 @@ class DBBase:
 		self.starttime = starttime
 		self.nextSlide = starttime
 
+	def setStopTime(self, stoptime):
+		self.stoptime = stoptime
+
 	def getCurrentStartTime(self):
 		return self.starttime
 
@@ -29,5 +37,17 @@ class DBBase:
 		raise Exception("getNextFlows() not implemented ...")
 
 	def getNextWindow(self, table, query):
-		raise Excpetion("getFlows() not implemented ...")
+		raise Excpetion("getNextWindow() not implemented ...")
+
+	def getQueue(self):
+		return self.queue
+
+	def run(self):
+		while True:
+			flows = self.getNextFlows()
+			if len(flows) == 0:
+				# out of data, singal this by entering empty flows into queue
+				self.queue.put(flows)
+				return
+			self.queue.put(flows)
 

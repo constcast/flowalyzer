@@ -50,9 +50,22 @@ class MainModule:
 
 		(first, last) = dbreader.getDBInterval()
 		dbreader.setStartTime(first)
+		dbreader.setStopTime(last)
 		dbreader.setStepSize(3600)
-		flows = dbreader.getNextFlows()
-		while dbreader.getCurrentStartTime() < last:
+
+		queue = dbreader.getQueue()
+		dbreader.start()
+		flows = []
+		while True:
+			flows = queue.get()
+			if len(flows) == 0:
+				print "Finished processing flows ..."
+				return
 			analyzer.processFlows(flows)
-			flows = dbreader.getNextFlows();
+
+		
+		#flows = dbreader.getNextFlows()
+		#while dbreader.getCurrentStartTime() < last:
+		#	analyzer.processFlows(flows)
+		#	flows = dbreader.getNextFlows();
 
