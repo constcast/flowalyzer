@@ -50,7 +50,7 @@ class MainModule:
 
 		(first, last) = dbreader.getDBInterval()
 		dbreader.setStartTime(first)
-		dbreader.setStepSize(1000)
+		dbreader.setStepSize(3600)
 		flows = dbreader.getNextFlows()
 		while dbreader.getCurrentStartTime() < last:
 			analyzer.processFlows(flows)

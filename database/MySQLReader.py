@@ -53,8 +53,11 @@ class MySQLReader(DBBase):
 		tableNames = self.getTableNames(self.nextSlide, self.nextSlide + self.stepSize);
 		flows = list()
 		for i in tableNames:
+			print "Executing statement ..."
 			self.cursor.execute("SELECT * FROM %s WHERE firstSwitched >= %d and lastSwitched < %d" % (i, self.nextSlide, self.nextSlide + self.stepSize))
+			print "Fetching next bunch of flows ..."
 			flowsFromTable = self.cursor.fetchall()
+			print "Joining flow tables ..."
 			if flowsFromTable:
 				flows.extend(list(flowsFromTable))
 		self.nextSlide = self.nextSlide + self.stepSize

@@ -1,6 +1,6 @@
 from  BaseAnalyzer import BaseAnalyzer
 
-import os
+import os, datetime
 
 class RRDGenerator:
 	def __init__(self, reportname, rrdDir, rrdIntervals, rrdGraphHist, statField):
@@ -19,15 +19,34 @@ class RRDGenerator:
 		self.statField = statField
 		self.rrdDBName = rrdDir + "db-%s-%d.rrd"
 
+		# try to create rrd directory
 		if not os.access(self.rrdDir, os.R_OK | os.W_OK):
 			os.mkdir(self.rrdDir)
 
-	def checkRRD(self, currTime):
+		# we cannot create the rrd databases right know. We have to know
+		# the start time in order to do so. Since it is not known a priory
+		# we have to create it when the first flows arrive. Store whether
+		# we already created the rrds in order to avoid file system checks
+		self.rrdsCreated = False
+
+		# lastupdate 
+		self.lastupdate = 0
+
+	def createRRD(self, currTime):
 		for i in range(0, len(self.intervals)):
 			rrdName = self.rrdDBName % (self.reportname, i)
-			if not os.access(rrdName, os.R_OK | os.W_OK):
-				os.system("rrdtool create %s --start %d --step=%d DS:input:ABSOLUTE:%d:U:U RRA:AVERAGE:0.5:%d:10000 RRA:MIN:0.5:%d:10000 RRA:MAX:0.5:%d:10000" % (rrdName, currTime, self.stepSize, self.intervals[i] * 10, self.intervals[i], self.intervals[i], self.intervals[i]))
+			if  os.access(rrdName, os.R_OK | os.W_OK):
+				os.remove(rrdName)
+			os.system("rrdtool create %s --start %d --step=%d DS:input:ABSOLUTE:%d:U:U RRA:AVERAGE:0.5:%d:10000 RRA:MIN:0.5:%d:10000 RRA:MAX:0.5:%d:10000" % (rrdName, currTime, self.stepSize, self.intervals[i] * 10, self.intervals[i], self.intervals[i], self.intervals[i]))
+		self.rrdsCreated = True
+
+	def checkRRD(self, currTime):
+		if not self.rrdsCreated:
+			self.createRRD(currTime)
+
+		for i in range(0, len(self.intervals)):
 			if (currTime > (self.intervalStart[i] + self.intervals[i] * self.stepSize)):
+				rrdName = self.rrdDBName % (self.reportname, i)
 				print "Updating: ", currTime
 				command = "rrdtool update %s %d:%d" % (rrdName, currTime, self.counter[i])
 				#print command
@@ -41,7 +60,12 @@ class RRDGenerator:
 			# this is probably the first record that we see so far
 			if (self.intervalStart[i] == 0):
 				self.intervalStart[i] = flow_record[8]
-		self.checkRRD(flow_record[8])
+		
+		# check every second if we need to update the rrds
+		# TODO: this can be optimized ...
+		if self.lastupdate < flow_record[8]:
+			self.checkRRD(flow_record[8])
+			self.lastupdate = flow_record[8]
 
 	def createImages(self, imgDir, endTime):
 		pngImg = imgDir + '/%s-%d.png'
@@ -83,13 +107,13 @@ class Analyzer(BaseAnalyzer):
 			if not 'filter' in reportConfig:
 				raise Exception("FlowStat: Found report configuration without \'filter\' field: %s" % (reportConfig))
 			self.reports.append(RRDGenerator(reportConfig['reportName'], self.rrdDir, rrdintervals, rrdgraphhist, reportConfig['idx']))
-		#self.packetReport = RRDGenerator("Packets", self.rrdDir, rrdintervals, rrdgraphhist, 7)
-		#self.bytesReport  = RRDGenerator("Bytes"  , self.rrdDir, rrdintervals, rrdgraphhist, 6)
 	
 	def processFlows(self, flows):
+		print "Updating flow stats for " + str(len(flows)) + " flows ... " + str(datetime.datetime.now())
 		for flow in flows:
 			for report in self.reports:
 				report.update(flow)
+		print "Generating images ..." + str(datetime.datetime.now())
 		if len(flows) > 1:
 			for report in self.reports:
 				report.createImages(self.imgDir, flows[-1][8])
