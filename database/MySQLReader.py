@@ -42,7 +42,7 @@ class MySQLReader(DBBase):
 
 	def getDBInterval(self):
 		firstTable = self.getTables()[0]
-		self.cursor.execute("SELECT firstSwitched from %s LIMIT 1" % (firstTable))
+		self.cursor.execute("SELECT MIN(firstSwitched) from %s" % (firstTable))
 		first =  int(self.cursor.fetchall()[0][0])
 		lastTable = self.getTables()[-1]
 		self.cursor.execute("SELECT MAX(firstSwitched) from %s" % (lastTable))
@@ -54,7 +54,7 @@ class MySQLReader(DBBase):
 		flows = list()
 		for i in tableNames:
 			print "Executing statement ..."
-			self.cursor.execute("SELECT * FROM %s WHERE firstSwitched >= %d and lastSwitched < %d" % (i, self.nextSlide, self.nextSlide + self.stepSize))
+			self.cursor.execute("SELECT * FROM %s WHERE firstSwitched >= %d and lastSwitched < %d ORDER BY firstSwitched" % (i, self.nextSlide, self.nextSlide + self.stepSize))
 			print "Fetching next bunch of flows ..."
 			flowsFromTable = self.cursor.fetchall()
 			print "Joining flow tables ..."
