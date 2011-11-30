@@ -2,8 +2,11 @@ db_host: <hostname>
 db_user: <username>
 db_password: <password>
 db_name: <dbname>
+db_stepsize: <seconds>
 
 db_engine: <mysql|postgres|csv>
+
+# ---- FlowStat configuration
 
 analyzers: [ FlowStat ]
 FlowStatConfig: 
@@ -11,3 +14,13 @@ FlowStatConfig:
 - { reportName: 'Packets', idx: 7, filter: ' ' }
 - { reportName: 'Bytes', idx: 6, filter: ' ' }
 
+# ----- CSVWriter configuration
+
+analyzers: [ CSVWriter ]
+CSVWriterConfig: { outputfile: 'filename.csv' }
+
+
+#  ----- Subnet-Grapher
+
+analyzers: [ SubnetGrapher ]
+SubnetGrapherConfig: { subnetCSV: 'subnetconfig.csv', outputdir: 'sgDir/' }
