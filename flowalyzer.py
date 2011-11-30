@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
 
-from mainmodule import MainModule
+from mainmodule import getMainModule
 
 import sys, yaml
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 		parser.print_help()
 		sys.exit(-1)
 
-	main = MainModule(config)
+	main = getMainModule(config)
 	main.run()
 
 

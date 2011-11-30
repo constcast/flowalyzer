@@ -1,5 +1,18 @@
 
-import sys, new
+import sys, new, signal
+
+running = True
+mainmodule = None
+
+def sig_int_handler(signum, frame):
+	print "Received shutdown signal ..."
+	running = False
+
+
+def getMainModule(config):
+	mainmodule = MainModule(config)
+	return mainmodule
+	
 
 class MainModule:
 	def __init__(self, config):
@@ -9,6 +22,8 @@ class MainModule:
 		if not "db_engine" in self.config:
 			print "FATAL: You need to configure a DB backend in your config file!"
 			sys.exit(-1)
+
+		signal.signal(signal.SIGINT, sig_int_handler)
 
 		print "Loading DB Connection ..."
 		if self.config['db_engine'] == "mysql": 
@@ -50,16 +65,22 @@ class MainModule:
 		queue = dbreader.getQueue()
 		dbreader.start()
 		flows = []
-		while True:
-			flows = queue.get()
+
+		global running
+
+		while running:
+			try:
+				flows = queue.get()
+			except:
+				running = False
+				continue
 			if len(flows) == 0:
 				print "Finished processing flows ..."
 				return
 			analyzer.processFlows(flows)
 
-		
-		#flows = dbreader.getNextFlows()
-		#while dbreader.getCurrentStartTime() < last:
-		#	analyzer.processFlows(flows)
-		#	flows = dbreader.getNextFlows();
+		print "Terminating dbReader ... This may take a while ..."
+		dbreader.terminate()
+		print "Joining dbReader ..."
+		dbreader.join()	
 

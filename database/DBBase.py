@@ -50,5 +50,8 @@ class DBBase(multiprocessing.Process):
 				# out of data, singal this by entering empty flows into queue
 				self.queue.put(flows)
 				return
-			self.queue.put(flows)
+			try:
+				self.queue.put(flows)
+			except:
+				return
 
