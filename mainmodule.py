@@ -51,7 +51,7 @@ class MainModule:
 		(first, last) = dbreader.getDBInterval()
 		dbreader.setStartTime(first)
 		dbreader.setStopTime(last)
-		dbreader.setStepSize(3600)
+		dbreader.setStepSize(1200)
 
 		queue = dbreader.getQueue()
 		dbreader.start()

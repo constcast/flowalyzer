@@ -17,7 +17,9 @@ class RRDGenerator:
 		self.graphHistory = rrdGraphHist
 		self.filter = None
 		self.statField = statField
-		self.rrdDBName = rrdDir + "db-%s-%d.rrd"
+		self.rrdDBName = rrdDir + "db-%s-%s.rrd"
+		self.imgNames = [ "Short", "Mid", "Long" ]
+
 
 		# try to create rrd directory
 		if not os.access(self.rrdDir, os.R_OK | os.W_OK):
@@ -34,7 +36,7 @@ class RRDGenerator:
 
 	def createRRD(self, currTime):
 		for i in range(0, len(self.intervals)):
-			rrdName = self.rrdDBName % (self.reportname, i)
+			rrdName = self.rrdDBName % (self.reportname, self.imgNames[i])
 			if  os.access(rrdName, os.R_OK | os.W_OK):
 				os.remove(rrdName)
 			os.system("rrdtool create %s --start %d --step=%d DS:input:ABSOLUTE:%d:U:U RRA:AVERAGE:0.5:%d:10000 RRA:MIN:0.5:%d:10000 RRA:MAX:0.5:%d:10000" % (rrdName, currTime, self.stepSize, self.intervals[i] * 10, self.intervals[i], self.intervals[i], self.intervals[i]))
@@ -46,7 +48,7 @@ class RRDGenerator:
 
 		for i in range(0, len(self.intervals)):
 			if (currTime > (self.intervalStart[i] + self.intervals[i] * self.stepSize)):
-				rrdName = self.rrdDBName % (self.reportname, i)
+				rrdName = self.rrdDBName % (self.reportname, self.imgNames[i])
 				print "Updating: ", currTime
 				command = "rrdtool update %s %d:%d" % (rrdName, currTime, self.counter[i])
 				#print command
@@ -68,10 +70,10 @@ class RRDGenerator:
 			self.lastupdate = flow_record[8]
 
 	def createImages(self, imgDir, endTime):
-		pngImg = imgDir + '/%s-%d.png'
+		pngImg = imgDir + '/%s-%s.png'
 		for i in range(0, len(self.intervals)):
-			rrdName = self.rrdDBName % (self.reportname, i)
-			command = "rrdtool graph %s --width=800 --height=600 --end %d --start %d-%dm DEF:ds0b=%s:input:MAX LINE1:ds0b#9999FF:\"min/max\" DEF:ds0c=%s:input:MIN LINE1:ds0c#9999FF DEF:ds0a=%s:input:AVERAGE LINE2:ds0a#0000FF:\"average\"" % (pngImg % (self.reportname, self.intervals[i]), endTime, endTime, self.graphHistory[i], rrdName, rrdName, rrdName)
+			rrdName = self.rrdDBName % (self.reportname, self.imgNames[i])
+			command = "rrdtool graph %s --width=800 --height=600 --end %d --start %d-%dm DEF:ds0b=%s:input:MAX LINE1:ds0b#9999FF:\"min/max\" DEF:ds0c=%s:input:MIN LINE1:ds0c#9999FF DEF:ds0a=%s:input:AVERAGE LINE2:ds0a#0000FF:\"average\"" % (pngImg % (self.reportname, self.imgNames[i]), endTime, endTime, self.graphHistory[i], rrdName, rrdName, rrdName)
 			os.system(command)
 			#print command
 

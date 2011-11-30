@@ -13,6 +13,7 @@ class DBBase(multiprocessing.Process):
 		self.nextSlide = 0
 
 		self.queue = multiprocessing.Queue()
+		multiprocessing.Process.__init__(self)
 
 	def connect(self):
 		raise Exception("connect() not implemented ...")
