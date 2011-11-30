@@ -6,9 +6,6 @@ from mainmodule import MainModule
 
 import sys, yaml
 
-#from utils import *
-
-
 if __name__ == "__main__":
 	parser = OptionParser("usage: %prog [options]")
 	parser.add_option('-c', '--config', dest="configfile",

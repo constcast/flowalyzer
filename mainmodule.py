@@ -6,14 +6,6 @@ class MainModule:
 		self.config = config
 
 	def run(self):
-		if 'baTestMode' in self.config:
-			# we are now running the testing stuff we did for the BA
-			import utils
-			print "Running in BA test mode!"
-			utils.BA_TEMP_STUFF(self.config)
-			print "Finished BA mode. Exiting program!"
-			return
-
 		if not "db_engine" in self.config:
 			print "FATAL: You need to configure a DB backend in your config file!"
 			sys.exit(-1)
