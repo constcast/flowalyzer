@@ -62,7 +62,7 @@ class MainModule:
 		dbreader.setStopTime(last)
 		
 		if 'db_stepsize' in self.config:
-			dbreader.setStepSize(int(self.config['db_stepsize'}))
+			dbreader.setStepSize(int(self.config['db_stepsize']))
 		else: 
 			# use 5 minutes step size by default
 			dbreader.setStepSize(300)
