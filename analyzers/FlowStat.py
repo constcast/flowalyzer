@@ -78,7 +78,9 @@ class RRDGenerator:
 			#print command
 
 class Analyzer(BaseAnalyzer):
-	def __init__(self, config):
+	def __init__(self, config, reportingInterval):
+		BaseAnalyzer.__init__(self, config, reportingInterval)
+
 		print "Initializing FlowStat module ..."
 		if len(config) == 0 or not isinstance(config[0], dict):
 			raise Exception("Configuration error cannot configure FlowStat!")
@@ -110,12 +112,12 @@ class Analyzer(BaseAnalyzer):
 				raise Exception("FlowStat: Found report configuration without \'filter\' field: %s" % (reportConfig))
 			self.reports.append(RRDGenerator(reportConfig['reportName'], self.rrdDir, rrdintervals, rrdgraphhist, reportConfig['idx']))
 	
-	def processFlows(self, flows):
-		print "Updating flow stats for " + str(len(flows)) + " flows ... " + str(datetime.datetime.now())
-		for flow in flows:
-			for report in self.reports:
-				report.update(flow)
+	def processFlow(self, flow):
+		#print "Updating flow stats for " + str(len(flows)) + " flows ... " + str(datetime.datetime.now())
+		for report in self.reports:
+			report.update(flow)
+
+	def generateReport(self, reportNumber, reportTime):
 		print "Generating images ..." + str(datetime.datetime.now())
-		if len(flows) > 1:
-			for report in self.reports:
-				report.createImages(self.imgDir, flows[-1][8])
+		report[reportNumber].createImages(self.imgDir, reportTime)
+		#report[reportNumber].createImages(self.imgDir, flows[-1][8])

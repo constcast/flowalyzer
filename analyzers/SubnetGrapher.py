@@ -11,8 +11,8 @@ import csv, socket, re
 import SubnetTree
 
 class Analyzer(BaseAnalyzer):
-	def __init__(self, config):
-		self.config = config
+	def __init__(self, config, reportIntervals):
+		BaseAnalyzer.__init__(self, config, reportIntervals)
 		if 'subnetCSV' in self.config:
 			self.parseSubnetCSV(self.config['subnetCSV'])
 		self.subnets = SubnetTree.SubnetTree()
@@ -77,11 +77,10 @@ class Analyzer(BaseAnalyzer):
 		return net
 		
 	
-	def processFlows(self, flows):
-		for flow in flows:
-			srcIP = self.int2ip(flow[0])
-			dstIP = self.int2ip(flow[1])
-			self.getSubnet(srcIP)
+	def processFlows(self, flow):
+		srcIP = self.int2ip(flow[0])
+		dstIP = self.int2ip(flow[1])
+		self.getSubnet(srcIP)
 			
 				
 

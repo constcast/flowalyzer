@@ -1,15 +1,57 @@
 from database import DBBase
 
+class ReportingInterval:
+	def __init__(self, intervalTime, startTime):
+		self.intervalLength = intervalTime
+		self.lastReport = startTime
+
+	def nextReportTime(self):
+		return self.lastReport + intervalLength
+
+	def updateNextReportTime(self):
+		self.lastReport = self.lastReport + self.intervalLength
+		
 class BaseAnalyzer:
-	def __init__(self, span):
-		self.tableSpan = span
-	
-	def go(self):
-		for i in self.tableSpan.getTableNames():
-			self.processFlows(self.span.getFlows(i, self.getQuery()))
+	def __init__(self, config, reportingIntervals):
+		self.config = config
+		self.reportingIntervals = reportingIntervals
 
 	def processFlows(self, flows):
+		# check the flow time stamps in order to find the timestamp where we have
+		# to generate reports (if this applies to this bunch of flows)
+		reportTimes = set()
+		# get last time
+		lastTime = flows[-1][8]
+		for interval in self.reportingIntervals:
+			reportTime = interval.lastReport + interval.intervalLength
+			if reportTime < lastTime:
+				reportTimes.append(reportTime)
+		reportTimes.sort()
+
+		if len(reportTimes) > 0:
+			nextReport = reportTimes.pop()
+		else:
+			nextReport = None
+
+		for flow in flows:
+			self.processFlow(flow)
+			if nextReport != None and nextReport >= flow[-1][8]:
+				# ok, we need to generate at least one report
+				# check each report on whether we need to generate it
+				for i in range(len(self.reportingIntervals)):
+					if nextReport == self.reportingIntervals[i].nextReportTime():
+						self.generateReport(i, nextReport)
+						self.reportingIntervals[i].updateNextReportTime()
+
+				if len(reportTimes) > 0:
+					nextReport = reportTimes.pop()
+				else:
+					nextReport = None
+
+
+	def processFlow(self, flow):
 		pass
 
-	def getQuery(self):
+	def generateReport(self, reportNumber, reportTime):
 		pass
+
