@@ -87,5 +87,11 @@ class MainModule:
 		print "Terminating dbReader ... This may take a while ..."
 		dbreader.terminate()
 		print "Joining dbReader ..."
-		dbreader.join()	
-
+		wait_for_processes = True
+		while wait_for_processes:
+			try:
+				# try until we succeeded
+				dbreader.join()	
+				wait_for_processes = False
+			except OSError:
+				pass
