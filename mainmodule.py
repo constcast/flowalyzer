@@ -87,7 +87,10 @@ class MainModule:
 				reportingIntervals.append(interval)
 
 			# create the analyzer
-			analyzer = importName.Analyzer(self.config[moduleConfigName], reportingIntervals)
+			if 'workdir' in self.config:
+				analyzer = importName.Analyzer(self.config[moduleConfigName], reportingIntervals, self.config['workdir'])
+			else:
+				analyzer = importName.Analyzer(self.config[moduleConfigName], reportingIntervals, 'workingdir/')
 		
 
 		print "Processing flows ..."

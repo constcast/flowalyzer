@@ -11,8 +11,8 @@ import csv, socket, re
 import SubnetTree
 
 class Analyzer(BaseAnalyzer):
-	def __init__(self, config, reportIntervals):
-		BaseAnalyzer.__init__(self, config, reportIntervals)
+	def __init__(self, config, reportIntervals, workingdir):
+		BaseAnalyzer.__init__(self, config, reportIntervals, workingdir)
 		if 'subnetCSV' in self.config:
 			self.parseSubnetCSV(self.config['subnetCSV'])
 		self.subnets = SubnetTree.SubnetTree()

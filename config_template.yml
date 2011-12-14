@@ -6,6 +6,8 @@ db_stepsize: <seconds>
 
 db_engine: <mysql|postgres|csv>
 
+workdir: workdir
+
 # ---- FlowStat configuration
 
 analyzers: [ FlowStat ]

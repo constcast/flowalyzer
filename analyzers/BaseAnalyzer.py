@@ -1,5 +1,7 @@
 from database import DBBase
 
+import os
+
 class ReportingInterval:
 	def __init__(self, intervalTime, startTime):
 		self.intervalLength = intervalTime
@@ -12,9 +14,15 @@ class ReportingInterval:
 		self.lastReport = self.lastReport + self.intervalLength
 		
 class BaseAnalyzer:
-	def __init__(self, config, reportingIntervals):
+	def __init__(self, config, reportingIntervals, workdir):
 		self.config = config
 		self.reportingIntervals = reportingIntervals
+
+		# append module name for specific analysis
+		self.workdir = workdir + '/' + self.__module__ + '/'
+		# create directory if they don't exist
+		if not os.access(self.workdir, os.R_OK | os.W_OK):
+			os.makedirs(self.workdir)
 
 	def processFlows(self, flows):
 		# check the flow time stamps in order to find the timestamp where we have
