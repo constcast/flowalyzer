@@ -40,5 +40,9 @@ class CSVReader(DBBase):
 			else:
 				flows.append(flow)
 		self.nextSlide = self.nextSlide + self.stepSize
+
+		if len(flows) == 0:
+			# we are out of flows. Signal this by raising an exception
+			raise Exception("No more flows in the CSV")
 		return flows
 			

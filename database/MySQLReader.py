@@ -60,7 +60,19 @@ class MySQLReader(DBBase):
 			print "Joining flow tables ..."
 			if flowsFromTable:
 				flows.extend(list(flowsFromTable))
+
+		if len(flows) == 0:
+			# we don't currently have any flows for the current 
+			# interval. Check if this is the end of the DB or 
+			# if we are observing a gap in the data
+			(first, last) = self.getDBInterval()
+			if last <= self.nextSlide:
+				# we are out of flows. signal this by raising an exception
+				raise Exception("Received all flows from DB")
+				
+
 		self.nextSlide = self.nextSlide + self.stepSize
+
 		return flows
 
 	def getNextWindow(self, table, query):

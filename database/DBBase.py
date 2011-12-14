@@ -45,13 +45,14 @@ class DBBase(multiprocessing.Process):
 
 	def run(self):
 		while True:
-			flows = self.getNextFlows()
-			if len(flows) == 0:
-				# out of data, singal this by entering empty flows into queue
-				self.queue.put(flows)
+			try: 
+				flows = self.getNextFlows()
+			except Exception as inst:
+				print "Finished processing flows: %s" % (inst)
+				self.queue.put([])
 				return
-			try:
+			
+			if len(flows) > 0: 
 				self.queue.put(flows)
-			except:
-				return
+
 
