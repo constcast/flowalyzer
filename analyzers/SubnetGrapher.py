@@ -77,7 +77,7 @@ class Analyzer(BaseAnalyzer):
 		return net
 		
 	
-	def processFlows(self, flow):
+	def processFlow(self, flow):
 		srcIP = self.int2ip(flow[0])
 		dstIP = self.int2ip(flow[1])
 		self.getSubnet(srcIP)

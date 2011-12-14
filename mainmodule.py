@@ -1,11 +1,15 @@
 
-import sys, new, signal
+import sys, new, signal, os
 
 running = True
 mainmodule = None
+dbreaderpid = None
 
 def sig_int_handler(signum, frame):
 	print "Received shutdown signal ..."
+	print "killing dbreader ..."
+	if dbreaderpid != None:
+		os.kill(dbreaderpid)
 	running = False
 
 
@@ -92,6 +96,7 @@ class MainModule:
 
 		queue = dbreader.getQueue()
 		dbreader.start()
+		dbreaderpid = dbreader.pid
 		flows = []
 
 		global running
