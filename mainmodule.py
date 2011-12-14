@@ -39,6 +39,13 @@ class MainModule:
 			print "FATAL: Unknown DB backend configured: %s" % (self.config['db_engine'])
 			sys.exit(-1)
 
+		# get starting time of the DB intervals
+		(first, last) = dbreader.getDBInterval()
+		dbreader.setStartTime(first)
+		dbreader.setStopTime(last)
+
+		#initialize analyzers
+
 		if not "analyzers" in self.config:
 			print "FATAL: You need to specify at least one analyzer for your flow data!"
 			sys.exit(-1)
@@ -46,26 +53,42 @@ class MainModule:
 		sys.path.append("analyzers/")
 		if not "analyzers" in self.config:
 			raise Exception("Could not find analyzers section in config file!")
+
+
+		if 'db_stepsize' in self.config:
+			dbreader.setStepSize(int(self.config['db_stepsize']))
+		else: 
+			# use 5 minutes step size by default
+			dbreader.setStepSize(300)
+
 		for moduleName in self.config["analyzers"]:
 			importName = __import__(moduleName)
 			moduleConfigName = moduleName + "Config"
 			if not moduleConfigName in self.config:
 				print self.config
 				raise Exception("Could not find section %s for module %s in configuration" % (moduleConfigName, moduleConfigName))
-			analyzer = importName.Analyzer(self.config[moduleConfigName])
+
+			# define default reporting intervals. We want the intervals
+			# - 30 minutes
+			# - 1 hour
+			# - 1 day
+			# - 1 week
+			# - 1 month
+			# - 1 year
+			# - cont
+			import BaseAnalyzer
+			reportingIntervals = []
+			for i in [ 1800, 3600, 86400, 604800, 2419200, 29030400 ]:
+				interval = BaseAnalyzer.ReportingInterval(i, first)
+				reportingIntervals.append(interval)
+
+			# create the analyzer
+			analyzer = importName.Analyzer(self.config[moduleConfigName], reportingIntervals)
 		
 
 		print "Processing flows ..."
 
-		(first, last) = dbreader.getDBInterval()
-		dbreader.setStartTime(first)
-		dbreader.setStopTime(last)
-		
-		if 'db_stepsize' in self.config:
-			dbreader.setStepSize(int(self.config['db_stepsize']))
-		else: 
-			# use 5 minutes step size by default
-			dbreader.setStepSize(300)
+		# fork out processes and process flows 
 
 		queue = dbreader.getQueue()
 		dbreader.start()
