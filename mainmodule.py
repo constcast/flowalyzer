@@ -9,7 +9,7 @@ def sig_int_handler(signum, frame):
 	print "Received shutdown signal ..."
 	print "killing dbreader ..."
 	if dbreaderpid != None:
-		os.kill(dbreaderpid)
+		os.kill(dbreaderpid, 9)
 	running = False
 
 
@@ -113,7 +113,14 @@ class MainModule:
 			if len(flows) == 0:
 				print "Finished processing flows ..."
 				return
-			analyzer.processFlows(flows)
+			try:
+				analyzer.processFlows(flows)
+			except Exception as inst:
+				# ignore errors and try to progress
+				# TODO: FIX this with some proper error handling
+				print "ERROR: There has been an analysis exception: %s" % (inst)
+				import traceback
+				traceback.print_exc(file=sys.stdout)
 
 		print "Terminating dbReader ... This may take a while ..."
 		dbreader.terminate()
