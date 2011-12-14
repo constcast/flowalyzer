@@ -19,7 +19,7 @@ class BaseAnalyzer:
 		self.reportingIntervals = reportingIntervals
 
 		# append module name for specific analysis
-		self.workdir = workdir + '/' + self.__module__ + '/'
+		self.workdir = os.path.join(workdir, self.__module__);
 		# create directory if they don't exist
 		if not os.access(self.workdir, os.R_OK | os.W_OK):
 			os.makedirs(self.workdir)
@@ -38,7 +38,6 @@ class BaseAnalyzer:
 		reportset = set(reportTimes)
 		reportTimes = list(reportset)
 		reportTimes.sort()
-		print reportTimes
 
 		if len(reportTimes) > 0:
 			nextReport = reportTimes.pop()

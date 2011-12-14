@@ -96,7 +96,6 @@ class MainModule:
 		print "Processing flows ..."
 
 		# fork out processes and process flows 
-
 		queue = dbreader.getQueue()
 		dbreader.start()
 		dbreaderpid = dbreader.pid
@@ -116,11 +115,12 @@ class MainModule:
 			try:
 				analyzer.processFlows(flows)
 			except Exception as inst:
-				# ignore errors and try to progress
+				# ignore errors 
 				# TODO: FIX this with some proper error handling
 				print "ERROR: There has been an analysis exception: %s" % (inst)
 				import traceback
 				traceback.print_exc(file=sys.stdout)
+				running = False
 
 		print "Terminating dbReader ... This may take a while ..."
 		dbreader.terminate()
