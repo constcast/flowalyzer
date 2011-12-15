@@ -1,4 +1,5 @@
 import multiprocessing
+import time
 
 class DBBase(multiprocessing.Process):
 	def __init__(self, dbname, host, user, password):
@@ -12,7 +13,7 @@ class DBBase(multiprocessing.Process):
 		self.stoptime = 0
 		self.nextSlide = 0
 
-		self.queue = multiprocessing.Queue()
+		self.queue = multiprocessing.Queue(32000)
 		multiprocessing.Process.__init__(self)
 
 	def connect(self):
