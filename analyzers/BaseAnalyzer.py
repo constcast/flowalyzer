@@ -46,7 +46,7 @@ class BaseAnalyzer:
 
 		for flow in flows:
 			self.processFlow(flow)
-			if nextReport != None and nextReport >= flow[8]:
+			if nextReport != None and nextReport <= flow[8]:
 				# ok, we need to generate at least one report
 				# check each report on whether we need to generate it
 				for i in range(len(self.reportingIntervals)):
