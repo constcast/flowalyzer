@@ -78,8 +78,8 @@ class RRDGenerator:
 			#print command
 
 class Analyzer(BaseAnalyzer):
-	def __init__(self, config, reportingInterval):
-		BaseAnalyzer.__init__(self, config, reportingInterval)
+	def __init__(self, config, reportingInterval, workingdir):
+		BaseAnalyzer.__init__(self, config, reportingInterval, workingdir)
 
 		print "Initializing FlowStat module ..."
 		if len(config) == 0 or not isinstance(config[0], dict):
@@ -89,11 +89,11 @@ class Analyzer(BaseAnalyzer):
 
 		if not 'imgDir' in self.configDict:
 			raise Exception("FlowStat: imgDir not configured!")
-		self.imgDir = self.configDict['imgDir']
+		self.imgDir = os.path.join(self.workdir, self.configDict['imgDir'])
 
 		if not 'rrdDir' in self.configDict:
 			raise Exception("FlowStat: rrdDir not configured!")
-		self.rrdDir = self.configDict['rrdDir']
+		self.rrdDir = os.path.join(self.workdir, self.configDict['rrdDir'])
 
 		if not os.access(self.imgDir, os.R_OK | os.W_OK):
 			os.mkdir(self.imgDir)
@@ -119,5 +119,5 @@ class Analyzer(BaseAnalyzer):
 
 	def generateReport(self, reportNumber, reportTime):
 		print "Generating images ..." + str(datetime.datetime.now())
-		report[reportNumber].createImages(self.imgDir, reportTime)
+		#report[reportNumber].createImages(self.imgDir, reportTime)
 		#report[reportNumber].createImages(self.imgDir, flows[-1][8])

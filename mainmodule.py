@@ -66,6 +66,7 @@ class MainModule:
 			# use 5 minutes step size by default
 			dbreader.setStepSize(300)
 
+		analyzers = []
 		for moduleName in self.config["analyzers"]:
 			importName = __import__(moduleName)
 			moduleConfigName = moduleName + "Config"
@@ -89,9 +90,9 @@ class MainModule:
 
 			# create the analyzer
 			if 'workdir' in self.config:
-				analyzer = importName.Analyzer(self.config[moduleConfigName], reportingIntervals, self.config['workdir'])
+				analyzers.append(importName.Analyzer(self.config[moduleConfigName], reportingIntervals, self.config['workdir']))
 			else:
-				analyzer = importName.Analyzer(self.config[moduleConfigName], reportingIntervals, 'workingdir/')
+				analyzers.append(importName.Analyzer(self.config[moduleConfigName], reportingIntervals, 'workingdir/'))
 		
 
 		print "Processing flows ..."
@@ -115,7 +116,8 @@ class MainModule:
 				break
 			try:
 				print "Processing more flows ..."
-				analyzer.processFlows(flows)
+				for i in analyzers:
+					i.processFlows(flows)
 			except Exception as inst:
 				# ignore errors 
 				# TODO: FIX this with some proper error handling
