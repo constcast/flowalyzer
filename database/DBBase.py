@@ -13,7 +13,7 @@ class DBBase(multiprocessing.Process):
 		self.stoptime = 0
 		self.nextSlide = 0
 
-		self.queue = multiprocessing.Queue(32000)
+		self.queue = multiprocessing.Queue()
 		multiprocessing.Process.__init__(self)
 
 	def connect(self):
@@ -53,7 +53,17 @@ class DBBase(multiprocessing.Process):
 				self.queue.put([])
 				return
 			
-			if len(flows) > 0: 
+			if len(flows) > 0:
+				try: 
+					# some platforms such as Mac OS X do not
+					# implement multiprocessing.Queue.qsize()
+					# we will therefore only wait if we are on
+					# a platform which supports this
+					while self.queue.qsize() > 100000:
+						print "Analyzers are running to slow. Queue is filling up. I'll just give them some time to process the queue content..."
+						time.sleep(2)
+				except:
+					print "Cannot determine queue size. I'll therefore continue to fill the queue ..."
 				self.queue.put(flows)
 
 
