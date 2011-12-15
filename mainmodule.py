@@ -7,9 +7,10 @@ dbreaderpid = None
 
 def sig_int_handler(signum, frame):
 	print "Received shutdown signal ..."
-	print "killing dbreader ..."
 	if dbreaderpid != None:
+		print "Killing dbreader ..."
 		os.kill(dbreaderpid, 9)
+	global running
 	running = False
 
 
@@ -111,8 +112,9 @@ class MainModule:
 				continue
 			if len(flows) == 0:
 				print "Finished processing flows ..."
-				return
+				break
 			try:
+				print "Processing more flows ..."
 				analyzer.processFlows(flows)
 			except Exception as inst:
 				# ignore errors 
