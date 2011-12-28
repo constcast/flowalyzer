@@ -1,5 +1,8 @@
 import multiprocessing
 import time
+import collections
+
+Flow = collections.namedtuple('Flow', 'dstIP, srcIP, srcPort, dstPort, proto, dstTos, bytes, pkts, firstSwitched, lastSwitched, firstSwitchedMillis, lastSwitchedMillis, exporterID')
 
 class DBBase(multiprocessing.Process):
 	def __init__(self, dbname, host, user, password):
@@ -47,7 +50,9 @@ class DBBase(multiprocessing.Process):
 	def run(self):
 		while True:
 			try: 
-				flows = self.getNextFlows()
+				flows = []
+				for flow in map(Flow._make,  self.getNextFlows()):
+					flows.append(flow)
 			except Exception as inst:
 				print "Finished processing flows: %s" % (inst)
 				self.queue.put([])
