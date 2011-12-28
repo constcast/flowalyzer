@@ -9,6 +9,13 @@ class Host:
 	def update(self, flow):
 		pass
 
+class Graphlet:
+	def __init__(self):
+		pass
+
+	def checkHost(self):
+		pass
+
 from BaseAnalyzer import BaseAnalyzer
 
 class Analyzer(BaseAnalyzer):
