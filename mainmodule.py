@@ -75,6 +75,7 @@ class MainModule:
 				raise Exception("Could not find section %s for module %s in configuration" % (moduleConfigName, moduleConfigName))
 
 			# define default reporting intervals. We want the intervals
+			# for testing only: 5 minutes
 			# - 30 minutes
 			# - 1 hour
 			# - 1 day
@@ -84,7 +85,10 @@ class MainModule:
 			# - cont
 			import BaseAnalyzer
 			reportingIntervals = []
-			for i in [ 1800, 3600, 86400, 604800, 2419200, 29030400 ]:
+			# the following line is for production:
+			#for i in [ 1800, 3600, 86400, 604800, 2419200, 29030400 ]:
+			# this one is for testing
+			for i in [ 300, 1800, 3600, 86400, 604800, 2419200, 29030400 ]:
 				interval = BaseAnalyzer.ReportingInterval(i, first)
 				reportingIntervals.append(interval)
 
