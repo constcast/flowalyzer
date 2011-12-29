@@ -129,12 +129,12 @@ class Analyzer(BaseAnalyzer):
 			i.updateSubnet(dstSubnet, flow[6], flow[7], 0, 0)
 			i.updateSubnet(srcSubnet, 0, 0, flow[6], flow[7])
 		
-	def generateReport(self, reportNumber, reportTime):
-		print "Generating Report", reportNumber, reportTime
-		reportFile = os.path.join(self.workdir, str(reportNumber) + "_" + str(reportTime))
+	def generateReport(self, reportNumber, startTime, endTime):
+		print "Generating Report", reportNumber, endTime
+		reportFile = os.path.join(self.workdir, str(reportNumber) + "_" + str(endTime))
 		try:
 			fd = open(reportFile, 'w')
-			self.reports[reportNumber].generateReport(fd, reportTime)
+			self.reports[reportNumber].generateReport(fd, endTime)
 			fd.close()
 		except Exception as inst:
 			print "Error writing report %s: %s" % (reportFile, inst)

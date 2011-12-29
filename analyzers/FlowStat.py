@@ -117,7 +117,7 @@ class Analyzer(BaseAnalyzer):
 		for report in self.reports:
 			report.update(flow)
 
-	def generateReport(self, reportNumber, reportTime):
+	def generateReport(self, reportNumber, startTime, endTime):
 		print "Generating images ..." + str(datetime.datetime.now())
-		#report[reportNumber].createImages(self.imgDir, reportTime)
+		#report[reportNumber].createImages(self.imgDir, endTime)
 		#report[reportNumber].createImages(self.imgDir, flows[-1][8])

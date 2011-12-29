@@ -7,6 +7,9 @@ class ReportingInterval:
 		self.intervalLength = intervalTime
 		self.lastReport = startTime
 
+	def lastReportTime(self):
+		return self.lastReport
+
 	def nextReportTime(self):
 		return self.lastReport + self.intervalLength
 
@@ -51,7 +54,7 @@ class BaseAnalyzer:
 				# check each report on whether we need to generate it
 				for i in range(len(self.reportingIntervals)):
 					if nextReport == self.reportingIntervals[i].nextReportTime():
-						self.generateReport(i, nextReport)
+						self.generateReport(i, self.reportingIntervals[i].lastReportTime(), nextReport)
 						self.reportingIntervals[i].updateNextReportTime()
 
 				if len(reportTimes) > 0:
@@ -63,6 +66,6 @@ class BaseAnalyzer:
 	def processFlow(self, flow):
 		pass
 
-	def generateReport(self, reportNumber, reportTime):
+	def generateReport(self, reportNumber, startTime, endTime):
 		pass
 
