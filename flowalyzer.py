@@ -21,8 +21,13 @@ if __name__ == "__main__":
 			print "Could not open config file \"%s\": %s" % (options.configfile, e)
 			sys.exit(-1)
 	else:
-		parser.print_help()
-		sys.exit(-1)
+		# try to read default config file config.yml if no other config has been read
+		try:
+			cf = file('config.yml', 'r')
+			config = yaml.load(cf)
+		except Exception, e:
+			parser.print_help()
+			sys.exit(-1)
 
 	main = getMainModule(config)
 	main.run()
