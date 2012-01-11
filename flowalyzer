@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "Compiling source files ..."
+make
+echo "Finished compiling. Starting app..."
+erl -noinput -noshell -pa $(basename $0) -s flowalyzer start
+

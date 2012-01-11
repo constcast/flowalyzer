@@ -1,10 +1,11 @@
-#!/usr/bin/env escript
+-module(flowalyzer).
+-export([start/0]).
 
--mode(compile).
 
-main(_) ->
-    io:format("FlowAlyzer starting up!"),
-    Reader = mysqlreader:start(mysqldb).
+start() ->
+    io:format("FlowAlyzer starting up!~n"),
+    Reader = mysqlreader:start(mysqldb),
+    halt(0).
 
 usage() ->
     io:format("usage: <progname>: "),
