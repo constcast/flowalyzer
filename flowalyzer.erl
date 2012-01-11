@@ -1,10 +1,11 @@
 -module(flowalyzer).
 -export([start/0]).
 
+-include("config.hrl").
 
 start() ->
     io:format("FlowAlyzer starting up!~n"),
-    Reader = mysqlreader:start(mysqldb),
+    Reader = ?DBBACKEND:start(?DBDEF),
     halt(0).
 
 usage() ->
