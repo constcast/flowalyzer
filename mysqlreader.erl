@@ -2,7 +2,7 @@
 -export([start/1]).
 
 -include("config.hrl").
--include("mysqlreader.hrl").
+-include("reader.hrl").
 
 % connectects to  adatabase using username and password
 %start({Username, Password}) ->
@@ -20,7 +20,7 @@ start(DSN) ->
 	    io:format("Could not connect to database: ~p~n", [Connection])
     end,
     getTables(Connection),
-    data = #mySQLData{conn = Connection }.
+    #readerData{handle = Connection }.
     %run(Conn, PID).
 
 getTables(Conn) ->

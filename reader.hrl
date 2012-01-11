@@ -1,1 +1,1 @@
--record(mySQLData, {conn, firstEntry = 0 , lastEntry = 0, currTime = 0, winSize = 0}).
+-record(readerData, {handle, firstEntry = 0 , lastEntry = 0, currTime = 0, winSize = 0}).
