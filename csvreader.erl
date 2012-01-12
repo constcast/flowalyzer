@@ -36,9 +36,6 @@ fileOutput({error, Reason}) ->
     io:format("Error reading CSV input file: ~p~n", [Reason]),
     eof.
 
-getRec([DstIP, SrcIP, SrcPort, DstPort, Proto, DstTos, Bytes, Pkts, FirstSwitched, LastSwitched, FirstSwitchedMillis, LastSwitchedMillis, ExporterID]) ->
-    #flow{dstIP = DstIP, srcIP = SrcIP, srcPort = SrcPort, dstPort = DstPort, proto = Proto, dstTos = DstTos, bytes = Bytes, pkts = Pkts, firstSwitched = FirstSwitched, lastSwitched=LastSwitched, firstSwitchedMillis = FirstSwitchedMillis, lastSwitchedMillis = LastSwitchedMillis, exporterID = ExporterID}.
-
 run(ReaderData) ->
     Res = fileOutput(file:read_line(ReaderData#readerData.handle)),
     if 
@@ -46,7 +43,6 @@ run(ReaderData) ->
 	    ok;
 	true ->
 	    Tokens = string:tokens(Res, ","),
-	    Flow = getRec(Tokens),
-	    io:format("~p~n", [Flow])
-	    %run(ReaderData)
+	    Flow = flows:getFlowFromList(Tokens),
+	    run(ReaderData)
     end.
