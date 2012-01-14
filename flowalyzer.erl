@@ -5,8 +5,17 @@
 
 start() ->
     io:format("FlowAlyzer starting up!~n"),
-    Reader = ?DBBACKEND:start(?DBDEF),
-    halt(0).
+
+    % setup the flow readers and the distribution chain
+    Distributor = spawn(distrib, start, []),
+%    Distributor ! eof,
+    Reader = spawn(?DBBACKEND, start, [Distributor, ?DBDEF]),
+
+    ok.
+    
+    % ok, we are finished. Tell the Distributor that we have finished ...
+    %io:format("No more content to be read from the reader ..."),
+    %Distributor ! eof.
 
 usage() ->
     io:format("usage: <progname>: "),

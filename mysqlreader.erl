@@ -1,16 +1,16 @@
 -module(mysqlreader).
--export([start/1]).
+-export([start/2]).
 
 -include("config.hrl").
 -include("reader.hrl").
 
 % connectects to  adatabase using username and password
 %start({Username, Password}) ->
-start({_,_}) ->
+start(FlowDest, {_,_}) ->
     ok;
 
 % connects to the database using hte odbc database identifier in ~/.odbc.ini
-start(DSN) ->
+start(FlowDest, DSN) ->
     application:start(odbc),
     ConnectString = io_lib:format("DSN=~w", [DSN]),
     {Ret, Connection} = odbc:connect(ConnectString, []),
@@ -20,7 +20,7 @@ start(DSN) ->
 	    io:format("Could not connect to database: ~p~n", [Connection])
     end,
     getTables(Connection),
-    #readerData{handle = Connection }.
+    #readerData{handle = Connection, flowDest=FlowDest}.
     %run(Conn, PID).
 
 getTables(Conn) ->

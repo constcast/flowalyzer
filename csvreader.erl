@@ -1,13 +1,13 @@
 -module(csvreader).
--export([start/1]).
+-export([start/2]).
 
 -include("config.hrl").
 -include("reader.hrl").
 -include("flows.hrl").
 
 
-%%% Main function of this module. Should be called by in a process
-start(_) ->
+%%% Main function of this module. Should be called  in a process
+start(FlowDest, _) ->
     Input = ?CSVINPUT,
     {Ret, Dev} = file:open(Input, read),
     if Ret == ok ->
@@ -16,7 +16,7 @@ start(_) ->
 	    io:format("Could not open CSV input file ~p: ~p~n", [Input, Dev])
     end,
     
-    ReaderData = #readerData{handle = Dev},
+    ReaderData = #readerData{handle = Dev, flowDest = FlowDest, startTime = now()},
     run(ReaderData).
 
 %%%
@@ -27,7 +27,6 @@ start(_) ->
 fileOutput({ok, Line}) ->
     % remove trailing 
     CSVLine = string:substr(Line, 1, string:len(Line) - 1),
-    io:format("~p~n", [CSVLine]),
     CSVLine;
 fileOutput(eof) ->
     io:format("Finished reading input file ...~n"),
@@ -40,9 +39,11 @@ run(ReaderData) ->
     Res = fileOutput(file:read_line(ReaderData#readerData.handle)),
     if 
 	Res == eof ->
+	    ReaderData#readerData.flowDest ! eof,
 	    ok;
 	true ->
 	    Tokens = string:tokens(Res, ","),
 	    Flow = flows:getFlowFromList(Tokens),
+	    ReaderData#readerData.flowDest ! Flow,
 	    run(ReaderData)
     end.
