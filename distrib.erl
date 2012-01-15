@@ -1,3 +1,8 @@
+%%% Distribution module
+%%% Takes flows from multiple destinations and pipes them
+%%% to its successors. These must been added by sending a
+%%% {addConsumer, Pid} message to the module
+
 -module(distrib).
 -export([start/0]).
 
@@ -24,6 +29,8 @@ run(State) ->
 	{addConsumer, Consumer} ->
 	    NewState = State#localState{consumerList = lists:append(State#localState.consumerList, [Consumer])},
 	    run(NewState);
+	{removeConsumer, Consumer} ->
+	    ok;
 	Flow ->
 	    handle_flow(Flow, State#localState.consumerList),
 	    run(State)
