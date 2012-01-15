@@ -1,3 +1,10 @@
+%%% CSV Reader Module
+%%%
+%%% Reads flows from a CSV file, tokenizes the input,
+%%% converts it into a flow (flows.hrl), and sends the
+%%% finished flows to the distribution module (specified
+%%% in the start function).
+
 -module(csvreader).
 -export([start/2]).
 
@@ -40,7 +47,9 @@ run(ReaderData) ->
     if 
 	Res == eof ->
 	    ReaderData#readerData.flowDest ! eof,
-	    ok;
+	    Finished = now(),
+	    io:format("Duration: ~p~n", [timer:now_diff(Finished, ReaderData#readerData.startTime)/1000]),
+	    exit(normal);
 	true ->
 	    Tokens = string:tokens(Res, ","),
 	    Flow = flows:getFlowFromList(Tokens),
