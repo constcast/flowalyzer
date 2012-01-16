@@ -18,14 +18,16 @@ handle_flow(Flow, ConsumerList) ->
     lists:foreach(Fun, ConsumerList),
     ok.
 
-shutdown() ->
+shutdown(ConsumerList) ->
     io:format("Shutting down receiver ...~n"),
+    Fun = fun(Pid) -> Pid ! eof end,
+    lists:foreach(Fun, ConsumerList),
     ok.
 
 run(State) ->
     receive 
 	eof  ->
-	    shutdown();
+	    shutdown(State#localState.consumerList);
 	{addConsumer, Consumer} ->
 	    NewState = State#localState{consumerList = lists:append(State#localState.consumerList, [Consumer])},
 	    run(NewState);
