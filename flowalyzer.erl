@@ -9,7 +9,16 @@ start() ->
     % setup the flow readers and the distribution chain
     Distributor = spawn(distrib, start, []),
 %    Distributor ! eof,
+    
+    % setup consumers
+    Consumer = spawn(hostalyzer, start, []),
+    
+    % connect them 
+    Distributor ! {addConsumer, Consumer},
+
+    % start flow source
     Reader = spawn(?DBBACKEND, start, [Distributor, ?DBDEF]),
+    
 
     ok.
     

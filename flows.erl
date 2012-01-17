@@ -3,7 +3,7 @@
 
 -include("flows.hrl").
 
-getFlowFromList([DstIP, SrcIP, SrcPort, DstPort, Proto, DstTos, Bytes, Pkts, FirstSwitched, LastSwitched, FirstSwitchedMillis, LastSwitchedMillis, ExporterID]) ->
+getFlowFromList([SrcIP, DstIP, SrcPort, DstPort, Proto, DstTos, Bytes, Pkts, FirstSwitched, LastSwitched, FirstSwitchedMillis, LastSwitchedMillis, ExporterID]) ->
     #flow{dstIP = DstIP, 
 	  srcIP = SrcIP, 
 	  srcPort = SrcPort, 
