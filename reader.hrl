@@ -1,6 +1,6 @@
 -record(readerData, {handle, 
 		    flowDest,
-		    startTime,
+		    startTime = 0,
 		    firstEntry = 0 , 
 		    lastEntry = 0, 
 		    currTime = 0, 
