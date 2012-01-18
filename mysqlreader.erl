@@ -33,15 +33,11 @@ start(FlowDest, DSN) ->
 		       firstQuery = getFirstTimestamp(Connection, lists:nth(1, TableStrings)),
 		       lastQuery = getLastTimestamp(Connection, lists:last(TableStrings)),
 		       currTime = getFirstTimestamp(Connection, lists:nth(1, TableStrings))},
-    io:format("~w~n", [Data]),
     run(Data).
 
 getTables(Conn) ->
     case odbc:sql_query(Conn, "SHOW TABLES LIKE 'h\\_%'") of
-%    case odbc:sql_query(Conn, "SELECT * from exporter") of
-	{selected, DescList, Results} ->
-	    io:format("~p~n", [DescList]),
-
+	{selected, _, Results} ->
 	    % Results come as tuples in UTF16 binary format. Convert to string uinsg
 	    Fun = fun(Tuple) ->
 			  TabString = element(1, Tuple),
@@ -118,7 +114,7 @@ getFlows(_, [], _, _) ->
 run(Data) when Data#readerData.currTime < Data#readerData.lastQuery ->
     Last = min(Data#readerData.lastQuery, Data#readerData.currTime + Data#readerData.winSize),
     NewData = Data#readerData{currTime = Data#readerData.currTime + Data#readerData.winSize},
-    io:format("Fetching Flows...", []),
+    io:format("Fetching Flows...~n", []),
     Data#readerData.flowDest ! getFlows(Data#readerData.handle, getTableNames(Data#readerData.currTime, Last), Data#readerData.currTime, Last),
     run(NewData);
 run(_) -> 
