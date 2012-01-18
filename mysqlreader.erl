@@ -99,7 +99,7 @@ getFlows(Conn, [FirstTable | Rest], First, Last) ->
 	    getFlows(Conn, Rest, First, Last);
 	{selected, _, Results} ->
 	    Flows = lists:map(fun(X) -> flows:getFlowFromList(tuple_to_list(X)) end, Results),
-	    [Flows | getFlows(Conn, Rest, First, Last)];
+	    Flows ++ getFlows(Conn, Rest, First, Last);
 	{error, Reason} ->
 	    io:format("Error selecting flows from Table ~s: ~s~n", [FirstTable, Reason])
     end;
@@ -114,7 +114,7 @@ getFlows(_, [], _, _) ->
 run(Data) when Data#readerData.currTime < Data#readerData.lastQuery ->
     Last = min(Data#readerData.lastQuery, Data#readerData.currTime + Data#readerData.winSize),
     NewData = Data#readerData{currTime = Data#readerData.currTime + Data#readerData.winSize},
-    io:format("Fetching Flows...~n", []),
+%    io:format("Fetching Flows...~n", []),
     Data#readerData.flowDest ! getFlows(Data#readerData.handle, getTableNames(Data#readerData.currTime, Last), Data#readerData.currTime, Last),
     run(NewData);
 run(_) -> 
