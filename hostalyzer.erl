@@ -25,7 +25,8 @@ updateHostInfo(Host, Flow) ->
 	     dstPorts = UpdateDict(Host#host.dstPorts, Flow#flow.dstPort),
 	     dstIPs   = UpdateDict(Host#host.dstIPs,   Flow#flow.dstIP)}.
 
-processFlow(Flow, State) ->    
+
+processFlows([Flow|Rest], State) ->
     % update the host map with new values
     case dict:is_key(Flow#flow.srcIP, State#state.hostMap) of
        true ->
@@ -37,7 +38,9 @@ processFlow(Flow, State) ->
     end,
 				     
     % return updated state
-    State#state{hostMap = NewHostMap}.
+    processFlows(Rest, State#state{hostMap = NewHostMap});
+processFlows([], State) ->
+    State.
 
 start() ->
     State = #state{hostMap = dict:new()},
@@ -46,8 +49,11 @@ start() ->
 run(State) ->
     receive 
 	eof ->
+	    io:format("Received End of Flow signal.~n", []),
 	    ok;
-	Flow ->
-	    NewState = processFlow(Flow, State),
+	Flows ->
+	    io:format("Received flows ...~n", []),
+	    NewState = processFlows(Flows, State),
+	    io:format("Finsihed processing flows!~n", []),
 	    run(NewState)
     end.
