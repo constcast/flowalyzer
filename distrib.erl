@@ -13,8 +13,8 @@ start() ->
     State = #localState{consumerList = []},
     run(State).
 
-handle_flow(Flow, ConsumerList) ->
-    Fun = fun(Pid) -> Pid ! Flow end,
+handle_flows(Flows, ConsumerList) ->
+    Fun = fun(Pid) -> Pid ! Flows end,
     lists:foreach(Fun, ConsumerList),
     ok.
 
@@ -31,10 +31,11 @@ run(State) ->
 	{addConsumer, Consumer} ->
 	    NewState = State#localState{consumerList = lists:append(State#localState.consumerList, [Consumer])},
 	    run(NewState);
-	{removeConsumer, Consumer} ->
+	{removeConsumer, _} ->
+	    % TODO: implement
 	    ok;
-	Flow ->
-	    handle_flow(Flow, State#localState.consumerList),
+	Flows ->
+	    handle_flows(Flows, State#localState.consumerList),
 	    run(State)
     end.
 	    
