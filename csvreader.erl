@@ -53,6 +53,6 @@ run(ReaderData) ->
 	true ->
 	    Tokens = string:tokens(Res, ","),
 	    Flow = flows:getFlowFromList(Tokens),
-	    ReaderData#readerData.flowDest ! Flow,
+	    ReaderData#readerData.flowDest ! [Flow],
 	    run(ReaderData)
     end.
