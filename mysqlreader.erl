@@ -25,15 +25,16 @@ start(FlowDest, DSN) ->
 	    io:format("Could not connect to database: ~p~n", [Connection])
     end,
     TableStrings = getTables(Connection),
-    lists:foreach(fun(X) -> io:format("Table: ~s~n", [X]) end, TableStrings),
     Data = #readerData{handle = Connection, 
 		       flowDest=FlowDest, 
 		       firstEntry = getFirstTimestamp(Connection, lists:nth(1, TableStrings)),
 		       lastEntry = getLastTimestamp(Connection, lists:last(TableStrings)),
 		       winSize = ?SEND_INTERVAL,
+		       firstQuery = getFirstTimestamp(Connection, lists:nth(1, TableStrings)),
+		       lastQuery = getLastTimestamp(Connection, lists:last(TableStrings)),
 		       currTime = getFirstTimestamp(Connection, lists:nth(1, TableStrings))},
     io:format("~w~n", [Data]),
-    run(Data, TableStrings).
+    run(Data).
 
 getTables(Conn) ->
     case odbc:sql_query(Conn, "SHOW TABLES LIKE 'h\\_%'") of
@@ -67,18 +68,17 @@ getTableNames(First, Last) when First < Last ->
     % build table name from timestamp
     TableName = io_lib:format("h_~p~p~p_~p_~p", [element(1, Date), element(2, Date), element(3, Date), element(1, Time), element(2, Time) div 30]),
 
-    io:format("~s~n", [TableName]),
     [TableName | getTableNames(AlignedStart + TableIntervalLen, Last)];
-getTableNames(First, Last) ->
+getTableNames(_, _) ->
     [].
    
 
 getFirstTimestamp(Conn, Table) ->
     QueryString = io_lib:format("SELECT MIN(firstSwitched) FROM ~s", [Table]),
     case odbc:sql_query(Conn, QueryString) of
-	{selected, DescList, []} ->
+	{selected, _, []} ->
 	    io:format("Table is empty", []);
-	{selected, DescList, Result} ->
+	{selected, _, Result} ->
 	    element(1, lists:nth(1, Result));
 	{error, Reason} ->
 	    io:format("Error selecting first timestamp: ~s~n", [Reason])
@@ -96,22 +96,31 @@ getLastTimestamp(Conn, Table) ->
 	    io:format("Error selecting last timestamp: ~s~n", [Reason])
     end.
 
+getFlows(Conn, [FirstTable | Rest], First, Last) ->
+    QueryString = io_lib:format("SELECT * FROM ~s where firstSwitched >= ~w and firstSwitched <= ~w ORDER BY firstSwitched", [FirstTable, First, Last]),
+    case odbc:sql_query(Conn, QueryString) of 
+	{selected, _, []} ->
+	    getFlows(Conn, Rest, First, Last);
+	{selected, _, Results} ->
+	    Flows = lists:map(fun(X) -> flows:getFlowFromList(tuple_to_list(X)) end, Results),
+	    [Flows | getFlows(Conn, Rest, First, Last)];
+	{error, Reason} ->
+	    io:format("Error selecting flows from Table ~s: ~s~n", [FirstTable, Reason])
+    end;
+getFlows(_, [], _, _) ->
+    [].
 
 %%% run(Conn, PID)
 %%%      Main mysqldbreader loop. Starts pulling flows from the Database and 
 %%%      pushes the results to the process defined in PID. 
 %%%      We let the database pull out data for SEND_PID (defined in config.hrl)
 %%%      worth of flows and push them in one bunch to the receiving ends.
-run(Mysqldata, [FirstTable | Rest]) ->
-    getTableNames(Mysqldata#readerData.firstEntry, Mysqldata#readerData.lastEntry),
-    QueryString = io_lib:format("SELECT * FROM ~s ORDER BY firstSwitched", [FirstTable]),
-    case odbc:sql_query(Mysqldata#readerData.handle, QueryString) of
-	{selected, DescList, Results} ->
-	    io:format("~w~n~w~n", [DescList, Results]),
-	    ok;
-	{error, Reason} ->
-	    io:format("Error selecting flows from database: ~s", [Reason])
-    end,
-    run(Mysqldata, Rest).
-
+run(Data) when Data#readerData.currTime < Data#readerData.lastQuery ->
+    Last = min(Data#readerData.lastQuery, Data#readerData.currTime + Data#readerData.winSize),
+    NewData = Data#readerData{currTime = Data#readerData.currTime + Data#readerData.winSize},
+    io:format("Fetching Flows...", []),
+    Data#readerData.flowDest ! getFlows(Data#readerData.handle, getTableNames(Data#readerData.currTime, Last), Data#readerData.currTime, Last),
+    run(NewData);
+run(_) -> 
+    ok.
     
