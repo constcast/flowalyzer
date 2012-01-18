@@ -62,7 +62,7 @@ getTableNames(First, Last) when First < Last ->
     AlignedStart = First - (First rem TableIntervalLen),
     {Date, Time} = secToDate(AlignedStart),
     % build table name from timestamp
-    TableName = io_lib:format("h_~p~p~p_~p_~p", [element(1, Date), element(2, Date), element(3, Date), element(1, Time), element(2, Time) div 30]),
+    TableName = io_lib:format("h_~p~2.2.0w~2.2.0w_~2.2.0w_~p", [element(1, Date), element(2, Date), element(3, Date), element(1, Time), element(2, Time) div 30]),
 
     [TableName | getTableNames(AlignedStart + TableIntervalLen, Last)];
 getTableNames(_, _) ->
