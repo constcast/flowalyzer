@@ -52,8 +52,8 @@ run(State) ->
 	    io:format("Received End of Flow signal.~n", []),
 	    ok;
 	Flows ->
-	    io:format("Received flows ...~n", []),
+%	    io:format("Received flows ...~n", []),
 	    NewState = processFlows(Flows, State),
-	    io:format("Finsihed processing flows!~n", []),
+%	    io:format("Finsihed processing flows!~n", []),
 	    run(NewState)
     end.

@@ -8,24 +8,20 @@ start() ->
 
     % setup the flow readers and the distribution chain
     Distributor = spawn(distrib, start, []),
-%    Distributor ! eof,
-    
+
     % setup consumers
-    Consumer = spawn(hostalyzer, start, []),
+    HostAlyzer    = spawn(hostalyzer, start, []),
+    FlowlenAlyzer = spawn(flowlenalyzer, start, []),
     
-    % connect them 
-    Distributor ! {addConsumer, Consumer},
+    % connect them to the distributor
+    Distributor ! {addConsumer, HostAlyzer},
+    Distributor ! {addConsumer, FlowlenAlyzer},
 
     % start flow source
-    Reader = spawn(?DBBACKEND, start, [Distributor, ?DBDEF]),
-    
+    spawn(?DBBACKEND, start, [Distributor, ?DBDEF]),    
 
     ok.
     
     % ok, we are finished. Tell the Distributor that we have finished ...
     %io:format("No more content to be read from the reader ..."),
     %Distributor ! eof.
-
-usage() ->
-    io:format("usage: <progname>: "),
-    halt(1).

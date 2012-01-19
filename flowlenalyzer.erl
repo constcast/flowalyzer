@@ -23,7 +23,6 @@ processFlows([Flow|Rest], State) ->
     BiFlow = createBiflow(Flow),
     case dict:is_key(BiFlow, State#state.biflowList) of
        true ->
-	    io:format("jalsasdfd~n", []),
 	    dumpFlowStats(Flow, dict:fetch(BiFlow, State#state.biflowList)),
 	    NewBiflowList = dict:erase(BiFlow, State#state.biflowList);
        false ->
