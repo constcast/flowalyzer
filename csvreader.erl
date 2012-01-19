@@ -14,8 +14,7 @@
 
 
 %%% Main function of this module. Should be called  in a process
-start(FlowDest, _) ->
-    Input = ?CSVINPUT,
+start(FlowDest, Input) ->
     {Ret, Dev} = file:open(Input, read),
     if Ret == ok ->
 	    ok;

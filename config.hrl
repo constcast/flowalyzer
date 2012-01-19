@@ -1,7 +1,7 @@
--define(DBBACKEND, mysqlreader).
-%-define(DBBACKEND, csvreader).
--define(DBDEF, mysqldb).
+%-define(DBDEF, mysqldb).
+%-define(DBBACKEND, mysqlreader).
 
--define(CSVINPUT, "flows-test.csv").
+-define(DBBACKEND, csvreader).
+-define(DBDEF, "flows-test.csv").
 
 -define(SEND_INTERVAL, 300).
