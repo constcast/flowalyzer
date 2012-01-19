@@ -1,24 +1,19 @@
-%%% MySQL Reader Module
+%%% Oracle Reader Module
 %%%
-%%% Reads flows from a MySQL database and pushes Flow (see flows.hrl)
+%%% Reads flows from a Oracle database and pushes Flow (see flows.hrl)
 %%% to the successor modules. 
 
--module(mysqlreader).
+-module(oraclereader).
 -export([start/2]).
 
 -include("config.hrl").
 -include("reader.hrl").
 
-% connectects to  adatabase using username and password
-%start({Username, Password}) ->
-% start(FlowDest, {_,_}) ->
-%     ok;
-
 % connects to the database using hte odbc database identifier in ~/.odbc.ini
 start(FlowDest, DSN) ->
     application:start(odbc),
     ConnectString = io_lib:format("DSN=~w", [DSN]),
-    {Ret, Connection} = odbc:connect(ConnectString, []),
+    {Ret, Connection} = odbc:connect(ConnectString, [{scrollable_cursors, off}]),
     if Ret == ok ->
 	    Connection;
        true  ->
@@ -36,7 +31,8 @@ start(FlowDest, DSN) ->
     run(Data).
 
 getTables(Conn) ->
-    case odbc:sql_query(Conn, "SHOW TABLES LIKE 'h\\_%'") of
+%    case odbc:sql_query(Conn, "SHOW TABLES LIKE 'h\\_%'") of
+    case odbc:sql_query(Conn, "SELECT * FROM user_objects WHERE object_type = 'TABLE' AND object_name LIKE 'H_%'") of
 	{selected, _, Results} ->
 	    % Results come as tuples in UTF16 binary format. Convert to string uinsg
 	    Fun = fun(Tuple) ->
@@ -62,7 +58,7 @@ getTableNames(First, Last) when First < Last ->
     AlignedStart = First - (First rem TableIntervalLen),
     {Date, Time} = secToDate(AlignedStart),
     % build table name from timestamp
-    TableName = io_lib:format("h_~p~2.2.0w~2.2.0w_~2.2.0w_~p", [element(1, Date), element(2, Date), element(3, Date), element(1, Time), element(2, Time) div 30]),
+    TableName = io_lib:format("H_~p~2.2.0w~2.2.0w_~2.2.0w_~p", [element(1, Date), element(2, Date), element(3, Date), element(1, Time), element(2, Time) div 30]),
 
     [TableName | getTableNames(AlignedStart + TableIntervalLen, Last)];
 getTableNames(_, _) ->
