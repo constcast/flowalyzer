@@ -4,7 +4,7 @@
 -include("flows.hrl").
 
 -record(state, {biflowList, maxLen = 0}).
--record(biflowEntry, {minIP, maxIP, minPort, maxPort, port}).
+-record(biflowEntry, {minIP, maxIP, minPort, maxPort, proto}).
 %-record(biflowStats, {bytes, packets}).
 
 %%% Creates a new host record for storing the statistics on the
@@ -13,7 +13,8 @@ createBiflow(Flow) ->
     #biflowEntry{minIP   = min(Flow#flow.srcIP,   Flow#flow.dstIP),
 		 maxIP   = max(Flow#flow.srcIP,   Flow#flow.dstIP),
 		 minPort = min(Flow#flow.srcPort, Flow#flow.dstPort),
-		 maxPort = max(Flow#flow.srcPort, Flow#flow.dstPort)}.
+		 maxPort = max(Flow#flow.srcPort, Flow#flow.dstPort),
+		 proto = Flow#flow.proto}.
 
 dumpFlowStats(FlowDir1, FlowDir2) ->
     io:format("~p | ~p~n", [FlowDir1, FlowDir2]),
