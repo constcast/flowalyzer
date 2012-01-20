@@ -93,7 +93,7 @@ getLastTimestamp(Conn, Table) ->
     end.
 
 getFlows(Conn, [FirstTable | Rest], First, Last) ->
-    QueryString = io_lib:format("SELECT * FROM ~s where firstSwitched >= ~w and firstSwitched <= ~w ORDER BY firstSwitched", [FirstTable, First, Last]),
+    QueryString = io_lib:format("SELECT srcIP,dstIP,srcPort,dstPort,proto,dstTos,bytes,pkts,firstSwitched,lastSwitched,firstSwitchedMillis,lastSwitchedMillis,exporterID FROM ~s where firstSwitched >= ~w and firstSwitched <= ~w ORDER BY firstSwitched", [FirstTable, First, Last]),
     case odbc:sql_query(Conn, QueryString) of 
 	{selected, _, []} ->
 	    getFlows(Conn, Rest, First, Last);
