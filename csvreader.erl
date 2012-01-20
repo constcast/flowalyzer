@@ -23,7 +23,7 @@ start(FlowDest, Input) ->
     end,
     
     ReaderData = #readerData{handle = Dev, flowDest = FlowDest, startTime = now()},
-    run(ReaderData).
+    run(ReaderData, 0).
 
 %%%
 %%% fileOutput(output)
@@ -41,7 +41,7 @@ fileOutput({error, Reason}) ->
     io:format("Error reading CSV input file: ~p~n", [Reason]),
     eof.
 
-run(ReaderData) ->
+run(ReaderData, FlowsRead) ->
     Res = fileOutput(file:read_line(ReaderData#readerData.handle)),
     if 
 	Res == eof ->
@@ -53,5 +53,13 @@ run(ReaderData) ->
 	    Tokens = string:tokens(Res, ","),
 	    Flow = flows:getFlowFromList(Tokens),
 	    ReaderData#readerData.flowDest ! [Flow],
-	    run(ReaderData)
+	    if 
+	       FlowsRead rem 100000 == 0 ->
+		    % wait for consumers to retrieve the data
+		    io:format("Waiting for consumers to work on the data for a little bit ...~n", []),
+		    timer:sleep(1000);
+		true ->
+		    ok
+	    end,
+	    run(ReaderData, FlowsRead + 1)
     end.
