@@ -46,6 +46,12 @@ class MainModule:
 
 		# get starting time of the DB intervals
 		(first, last) = dbreader.getDBInterval()
+
+		if "startTime" in self.config:
+			first = int(self.config['startTime'])
+		if "endTime" in self.config:
+			last = int(self.config["endTime"])
+	
 		dbreader.setStartTime(first)
 		dbreader.setStopTime(last)
 

@@ -6,6 +6,9 @@ db_stepsize: <seconds>
 
 db_engine: <mysql|postgres|csv>
 
+startTime: <unix seconds> (optional)
+endTime: <unix seconds> (optional)
+
 workdir: workdir
 
 # ---- FlowStat configuration
