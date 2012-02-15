@@ -53,7 +53,7 @@ class MySQLReader(DBBase):
 		if self.stoptime != 0 and self.nextSlide > self.stoptime:
 			print "Finished consuming flows from the DB ..."
 			# we are finished reading the flows we require
-			return []
+			raise Exception("Reached endtime ...")
 
 		tableNames = self.getTableNames(self.nextSlide, self.nextSlide + self.stepSize);
 		flows = list()
