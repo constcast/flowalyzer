@@ -56,7 +56,7 @@ run(ReaderData, FlowsRead) ->
 	    if 
 	       FlowsRead rem 100000 == 0 ->
 		    % wait for consumers to retrieve the data
-		    io:format("Waiting for consumers to work on the data for a little bit ...~n", []),
+		    io:format("Read ~w flows~n", [FlowsRead]),
 		    timer:sleep(1000);
 		true ->
 		    ok

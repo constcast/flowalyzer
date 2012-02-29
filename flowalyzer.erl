@@ -14,7 +14,7 @@ start() ->
     FlowlenAlyzer = spawn(flowlenalyzer, start, []),
     
     % connect them to the distributor
-    Distributor ! {addConsumer, HostAlyzer},
+%    Distributor ! {addConsumer, HostAlyzer},
     Distributor ! {addConsumer, FlowlenAlyzer},
 
     % start flow source

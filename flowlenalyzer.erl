@@ -3,7 +3,7 @@
 
 -include("flows.hrl").
 
--record(state, {biflowList, maxLen = 0}).
+-record(state, {biflowList, maxLen = 0, flowsRead = 0}).
 -record(biflowEntry, {minIP, maxIP, minPort, maxPort, proto}).
 %-record(biflowStats, {bytes, packets}).
 
@@ -17,10 +17,16 @@ createBiflow(Flow) ->
 		 proto = Flow#flow.proto}.
 
 dumpFlowStats(FlowDir1, FlowDir2) ->
-    io:format("~p | ~p~n", [FlowDir1, FlowDir2]),
+%    io:format("~p | ~p~n", [FlowDir1, FlowDir2]),
     ok.
 
 processFlows([Flow|Rest], State) ->
+    if
+        State#state.flowsRead rem 100000 == 0 ->
+	    io:format("Consumed ~w flows ...~n", [State#state.flowsRead]);
+	true ->
+	    ok
+    end,
     BiFlow = createBiflow(Flow),
     case dict:is_key(BiFlow, State#state.biflowList) of
        true ->
@@ -29,7 +35,7 @@ processFlows([Flow|Rest], State) ->
        false ->
 	    NewBiflowList = dict:append(BiFlow, Flow, State#state.biflowList)
     end,
-    processFlows(Rest, State#state{biflowList = NewBiflowList});
+    processFlows(Rest, State#state{biflowList = NewBiflowList, flowsRead = State#state.flowsRead + 1});
 processFlows([], State) ->
     State.
 
