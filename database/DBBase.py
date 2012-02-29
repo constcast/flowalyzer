@@ -26,6 +26,9 @@ class DBBase(multiprocessing.Process):
 	def getDBInterval(self):
 		raise Exception("getInterval() not implemented ...")
 
+	def getTableNames(self, first, last):
+		raise Exception("getTableSpace() not implemented ...")
+
 	def setStepSize(self, stepsize):
 		self.stepSize = stepsize
 
@@ -73,3 +76,15 @@ class DBBase(multiprocessing.Process):
 				self.queue.put(flows)
 
 
+	def executeQuery(self, query, table):
+		raise Exception("executeQuery() not implemented ...")
+
+	def runQuery(self, query, first, last):
+		tables = self.getTableNames(first, last)
+		result = []
+		for t in tables:
+			for flow in map(Flow._make, self.executeQuery(query, t)):
+				result.append(flow)
+		return result
+		
+		
