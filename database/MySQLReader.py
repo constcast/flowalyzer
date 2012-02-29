@@ -83,3 +83,8 @@ class MySQLReader(DBBase):
 	def getNextWindow(self, table, query):
 		raise Excpetion("getFlows() not implemented ...")
 	
+
+	def executeQuery(self, query):
+		return self.cursor.execute(query)
+		
+		
