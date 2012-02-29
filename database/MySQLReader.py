@@ -50,6 +50,11 @@ class MySQLReader(DBBase):
 		return (first, last)
 
 	def getNextFlows(self):
+		if self.stoptime != 0 and self.nextSlide > self.stoptime:
+			print "Finished consuming flows from the DB ..."
+			# we are finished reading the flows we require
+			return []
+
 		tableNames = self.getTableNames(self.nextSlide, self.nextSlide + self.stepSize);
 		flows = list()
 		for i in tableNames:

@@ -2,7 +2,8 @@ import multiprocessing
 import time
 import collections
 
-Flow = collections.namedtuple('Flow', 'dstIP, srcIP, srcPort, dstPort, proto, dstTos, bytes, pkts, firstSwitched, lastSwitched, firstSwitchedMillis, lastSwitchedMillis, exporterID')
+#Flow = collections.namedtuple('Flow', 'dstIP, srcIP, srcPort, dstPort, proto, dstTos, bytes, pkts, firstSwitched, lastSwitched, firstSwitchedMillis, lastSwitchedMillis, exporterID')
+Flow = collections.namedtuple('Flow', 'dstIP, srcIP, srcPort, dstPort, proto, bytes, pkts, firstSwitched, lastSwitched, exporterID')
 
 class DBBase(multiprocessing.Process):
 	def __init__(self, dbname, host, user, password):
