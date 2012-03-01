@@ -85,6 +85,7 @@ class MySQLReader(DBBase):
 	
 
 	def executeQuery(self, query):
-		return self.cursor.execute(query)
+		self.cursor.execute(query)
+		return self.cursor.fetchall()
 		
 		

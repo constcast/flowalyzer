@@ -76,14 +76,16 @@ class DBBase(multiprocessing.Process):
 				self.queue.put(flows)
 
 
-	def executeQuery(self, query, table):
+	def executeQuery(self, query):
 		raise Exception("executeQuery() not implemented ...")
 
 	def runQuery(self, query, first, last):
 		tables = self.getTableNames(first, last)
 		result = []
 		for t in tables:
-			for flow in map(Flow._make, self.executeQuery(query, t)):
+			tableQuery = str(query)
+			tableQuery = tableQuery.replace("%t", t)
+			for flow in map(Flow._make, self.executeQuery(tableQuery)):
 				result.append(flow)
 		return result
 		
