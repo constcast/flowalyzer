@@ -79,14 +79,14 @@ class DBBase(multiprocessing.Process):
 	def executeQuery(self, query):
 		raise Exception("executeQuery() not implemented ...")
 
-	def runQuery(self, query, first, last):
+	def runQuery(self, query, first, last, callback):
 		tables = self.getTableNames(first, last)
 		result = []
 		for t in tables:
+			print "STATUS: Querying table ", t
 			tableQuery = str(query)
 			tableQuery = tableQuery.replace("%t", t)
 			for flow in map(Flow._make, self.executeQuery(tableQuery)):
-				result.append(flow)
-		return result
+				callback(flow)
 		
 		
