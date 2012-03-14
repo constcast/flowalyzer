@@ -71,7 +71,5 @@ if __name__ == "__main__":
         #reader = MySQLReader.MySQLReader(self.config['db_name'], self.config['db_host'], self.config['db_user'], self.config['db_password'])
 	query = ' '.join(map(str, args))
         reader = MySQLReader.MySQLReader(options.dbname, options.host, options.user, options.password)
-	flows =  reader.runQuery(query, options.startTime, options.endTime)
-	for flow in flows:
-		printflow(flow)
+	reader.runQuery(query, options.startTime, options.endTime, printflow)
 
